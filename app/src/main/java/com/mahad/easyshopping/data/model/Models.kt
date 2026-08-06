@@ -50,3 +50,32 @@ data class Rating(
     val rate: Double,
     val count: Int
 )
+
+data class CartItem(
+    val productId: String,
+    val name: String,
+    val price: Double,
+    val quantity: Int,
+    val image: String
+)
+
+data class CartResponse(
+    val success: Boolean,
+    val message: String,
+    val cartItems: List<CartItem>,
+    val itemCount: Int,
+    val subtotal: Double
+)
+
+data class AddToCartRequest(
+    val productId: String,
+    val name: String,
+    val price: Double,
+    val quantity: Int,
+    val image: String
+)
+
+data class UpdateCartRequest(
+    val productId: String,
+    val quantity: Int
+)

@@ -2,6 +2,7 @@ package com.mahad.easyshopping.ui.login
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.mahad.easyshopping.data.SessionManager
 import com.mahad.easyshopping.data.api.RetrofitClient
 import com.mahad.easyshopping.data.model.LoginRequest
 import com.mahad.easyshopping.data.model.SocialLoginRequest
@@ -38,6 +39,7 @@ class LoginViewModel : ViewModel() {
             try {
                 val response = RetrofitClient.apiService.login(LoginRequest(email, password))
                 if (response.isSuccessful) {
+                    SessionManager.token = response.body()?.token
                     _uiState.update { it.copy(isLoading = false, isLoggedIn = true) }
                 } else {
                     val errorBody = response.errorBody()?.string() ?: ""
@@ -85,6 +87,7 @@ class LoginViewModel : ViewModel() {
                 try {
                     val response = RetrofitClient.apiService.socialLogin(request)
                     if (response.isSuccessful) {
+                        SessionManager.token = response.body()?.token
                         _uiState.update { it.copy(isLoading = false, isLoggedIn = true) }
                     } else {
                         val errorBody = response.errorBody()?.string() ?: ""

@@ -2,48 +2,127 @@ package com.mahad.easyshopping.ui.home
 
 import android.app.Activity
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ExitToApp
+import androidx.compose.material.icons.automirrored.filled.Help
+import androidx.compose.material.icons.automirrored.filled.ListAlt
+import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
+import com.mahad.easyshopping.data.SessionManager
 import com.mahad.easyshopping.data.model.Product
+import com.mahad.easyshopping.ui.cart.CartViewModel
+
+sealed class HomeTab(val title: String, val icon: ImageVector) {
+    object Home : HomeTab("Home", Icons.Filled.Home)
+    object Categories : HomeTab("Categories", Icons.Filled.Category)
+    object MyOrders : HomeTab("My Orders", Icons.Filled.ShoppingCart)
+    object Help : HomeTab("Help", Icons.AutoMirrored.Filled.Help)
+    object Account : HomeTab("Account", Icons.Filled.Person)
+}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
-    viewModel: HomeViewModel = viewModel()
+    onProductClick: (Int) -> Unit,
+    onCartClick: () -> Unit,
+    onLoginClick: () -> Unit,
+    viewModel: HomeViewModel = viewModel(),
+    cartViewModel: CartViewModel = viewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
-    val context = LocalContext.current
+    val cartUiState by cartViewModel.uiState.collectAsState()
+    var selectedTab by remember { mutableStateOf<HomeTab>(HomeTab.Home) }
+
+    val tabs = listOf(
+        HomeTab.Home,
+        HomeTab.Categories,
+        HomeTab.MyOrders,
+        HomeTab.Help,
+        HomeTab.Account
+    )
 
     Scaffold(
         topBar = {
-            TopAppBar(
-                title = { Text("Easy Shopping") },
-                navigationIcon = {
-                    IconButton(onClick = { (context as? Activity)?.finish() }) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Back"
+            Column {
+                CenterAlignedTopAppBar(
+                    title = { 
+                        Text(
+                            text = "Easy Shopping",
+                            style = MaterialTheme.typography.titleLarge,
+                            fontWeight = FontWeight.Bold
                         )
+                    },
+                    navigationIcon = {
+                        IconButton(onClick = { selectedTab = HomeTab.Account }) {
+                            Icon(
+                                imageVector = Icons.Filled.AccountCircle,
+                                contentDescription = "Profile",
+                                modifier = Modifier.size(32.dp),
+                                tint = MaterialTheme.colorScheme.primary
+                            )
+                        }
+                    },
+                    actions = {
+                        IconButton(
+                            onClick = {
+                                if (SessionManager.isLoggedIn) {
+                                    onCartClick()
+                                } else {
+                                    onLoginClick()
+                                }
+                            }
+                        ) {
+                            BadgedBox(
+                                badge = {
+                                    if (cartUiState.itemCount > 0) {
+                                        Badge {
+                                            Text(cartUiState.itemCount.toString())
+                                        }
+                                    }
+                                }
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Filled.ShoppingCart,
+                                    contentDescription = "Cart",
+                                    tint = MaterialTheme.colorScheme.primary
+                                )
+                            }
+                        }
                     }
+                )
+                HomeSearchBar()
+            }
+        },
+        bottomBar = {
+            NavigationBar {
+                tabs.forEach { tab ->
+                    NavigationBarItem(
+                        icon = { Icon(tab.icon, contentDescription = tab.title) },
+                        label = { Text(tab.title) },
+                        selected = selectedTab == tab,
+                        onClick = { selectedTab = tab }
+                    )
                 }
-            )
+            }
         }
     ) { innerPadding ->
         Box(
@@ -51,22 +130,57 @@ fun HomeScreen(
                 .fillMaxSize()
                 .padding(innerPadding)
         ) {
-            if (uiState.isLoading) {
-                CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
-            } else if (uiState.errorMessage != null) {
-                Text(
-                    text = uiState.errorMessage ?: "Unknown error",
-                    color = MaterialTheme.colorScheme.error,
-                    modifier = Modifier.align(Alignment.Center)
-                )
-            } else {
-                LazyVerticalGrid(
-                    columns = GridCells.Fixed(2),
-                    contentPadding = PaddingValues(8.dp),
-                    modifier = Modifier.fillMaxSize()
-                ) {
-                    items(uiState.products) { product ->
-                        ProductCard(product)
+            when (selectedTab) {
+                HomeTab.Home -> {
+                    if (uiState.isLoading) {
+                        CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+                    } else if (uiState.errorMessage != null) {
+                        Text(
+                            text = uiState.errorMessage ?: "Unknown error",
+                            color = MaterialTheme.colorScheme.error,
+                            modifier = Modifier.align(Alignment.Center)
+                        )
+                    } else {
+                        LazyVerticalGrid(
+                            columns = GridCells.Fixed(2),
+                            contentPadding = PaddingValues(8.dp),
+                            modifier = Modifier.fillMaxSize()
+                        ) {
+                            items(uiState.products) { product ->
+                                ProductCard(
+                                    product = product,
+                                    onClick = { onProductClick(product.id) }
+                                )
+                            }
+                        }
+                    }
+                }
+                HomeTab.Account -> {
+                    AccountScreen(onLoginClick = onLoginClick)
+                }
+                else -> {
+                    // Placeholder for other tabs
+                    Column(
+                        modifier = Modifier.fillMaxSize(),
+                        verticalArrangement = Arrangement.Center,
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Icon(
+                            imageVector = selectedTab.icon,
+                            contentDescription = null,
+                            modifier = Modifier.size(64.dp),
+                            tint = MaterialTheme.colorScheme.primary
+                        )
+                        Spacer(modifier = Modifier.height(16.dp))
+                        Text(
+                            text = "${selectedTab.title} Screen",
+                            style = MaterialTheme.typography.headlineMedium
+                        )
+                        Text(
+                            text = "Coming Soon",
+                            style = MaterialTheme.typography.bodyLarge,
+                            color = Color.Gray
+                        )
                     }
                 }
             }
@@ -74,9 +188,156 @@ fun HomeScreen(
     }
 }
 
+@Preview(showBackground = true)
 @Composable
-fun ProductCard(product: Product) {
+fun AccountScreenPreview() {
+    MaterialTheme {
+        AccountScreen(onLoginClick = {})
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun HomeScreenPreview() {
+    MaterialTheme {
+        HomeScreen(onCartClick = {}, onProductClick = {}, onLoginClick = {})
+    }
+}
+
+@Composable
+fun AccountScreen(onLoginClick: () -> Unit) {
+    if (!SessionManager.isLoggedIn) {
+        Column(
+            modifier = Modifier.fillMaxSize(),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Icon(
+                imageVector = Icons.Default.Lock,
+                contentDescription = null,
+                modifier = Modifier.size(80.dp),
+                tint = Color.LightGray
+            )
+            Spacer(modifier = Modifier.height(16.dp))
+            Text("Please login to see your profile", style = MaterialTheme.typography.titleMedium)
+            Spacer(modifier = Modifier.height(24.dp))
+            Button(onClick = onLoginClick) {
+                Text("Login")
+            }
+        }
+        return
+    }
+
+    val menuItems = listOf(
+        Pair("My Profile", Icons.Default.Person),
+        Pair("My Orders", Icons.AutoMirrored.Filled.ListAlt),
+        Pair("Shipping Address", Icons.Default.LocationOn),
+        Pair("Payment Methods", Icons.Default.Payment),
+        Pair("My Wishlist", Icons.Default.Favorite),
+        Pair("Settings", Icons.Default.Settings),
+        Pair("Logout", Icons.AutoMirrored.Filled.ExitToApp)
+    )
+
+    LazyColumn(
+        modifier = Modifier.fillMaxSize(),
+        contentPadding = PaddingValues(vertical = 8.dp)
+    ) {
+        item {
+            ProfileHeader()
+        }
+        items(menuItems) { item ->
+            ListItem(
+                headlineContent = { Text(item.first) },
+                leadingContent = { 
+                    Icon(
+                        imageVector = item.second, 
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.primary
+                    ) 
+                },
+                trailingContent = { 
+                    Icon(
+                        imageVector = Icons.Default.ChevronRight, 
+                        contentDescription = null,
+                        tint = Color.Gray
+                    ) 
+                },
+                modifier = Modifier.padding(horizontal = 8.dp)
+            )
+            HorizontalDivider(
+                modifier = Modifier.padding(horizontal = 16.dp),
+                thickness = 0.5.dp,
+                color = Color.LightGray
+            )
+        }
+    }
+}
+
+@Composable
+fun ProfileHeader() {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(24.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Surface(
+            shape = androidx.compose.foundation.shape.CircleShape,
+            color = MaterialTheme.colorScheme.primaryContainer,
+            modifier = Modifier.size(100.dp)
+        ) {
+            Box(contentAlignment = Alignment.Center) {
+                Icon(
+                    imageVector = Icons.Default.Person,
+                    contentDescription = null,
+                    modifier = Modifier.size(64.dp),
+                    tint = MaterialTheme.colorScheme.onPrimaryContainer
+                )
+            }
+        }
+        Spacer(modifier = Modifier.height(16.dp))
+        Text(
+            text = "John Doe",
+            style = MaterialTheme.typography.headlineSmall,
+            fontWeight = FontWeight.Bold
+        )
+        Text(
+            text = "john.doe@example.com",
+            style = MaterialTheme.typography.bodyMedium,
+            color = Color.Gray
+        )
+    }
+}
+
+@Composable
+fun HomeSearchBar() {
+    var text by remember { mutableStateOf("") }
+    TextField(
+        value = text,
+        onValueChange = { text = it },
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp, vertical = 8.dp)
+            .height(56.dp),
+        placeholder = { Text("Search products...") },
+        leadingIcon = { Icon(Icons.Default.Search, contentDescription = null) },
+        shape = androidx.compose.foundation.shape.RoundedCornerShape(28.dp),
+        colors = TextFieldDefaults.colors(
+            focusedIndicatorColor = Color.Transparent,
+            unfocusedIndicatorColor = Color.Transparent,
+            disabledIndicatorColor = Color.Transparent
+        ),
+        singleLine = true
+    )
+}
+
+@Composable
+fun ProductCard(
+    product: Product,
+    onClick: () -> Unit
+) {
     Card(
+        onClick = onClick,
         modifier = Modifier
             .padding(8.dp)
             .fillMaxWidth()

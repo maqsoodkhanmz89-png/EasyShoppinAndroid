@@ -2,6 +2,7 @@ package com.mahad.easyshopping.ui.login
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
@@ -16,11 +17,13 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LoginScreen(
     onLoginSuccess: () -> Unit,
     onCreateAccountClick: () -> Unit,
     onForgotPasswordClick: () -> Unit,
+    onBackClick: (() -> Unit)? = null,
     viewModel: LoginViewModel = viewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
@@ -43,6 +46,18 @@ fun LoginScreen(
     }
 
     Scaffold(
+        topBar = {
+            if (onBackClick != null) {
+                TopAppBar(
+                    title = { },
+                    navigationIcon = {
+                        IconButton(onClick = onBackClick) {
+                            Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+                        }
+                    }
+                )
+            }
+        },
         floatingActionButton = {
             ExtendedFloatingActionButton(
                 onClick = onCreateAccountClick,
@@ -185,7 +200,8 @@ fun LoginScreenPreview() {
         LoginScreen(
             onLoginSuccess = {},
             onCreateAccountClick = {},
-            onForgotPasswordClick = {}
+            onForgotPasswordClick = {},
+            onBackClick = {}
         )
     }
 }
