@@ -3,6 +3,7 @@ package com.mahad.easyshopping.data.api
 import com.mahad.easyshopping.data.model.*
 import retrofit2.Response
 import retrofit2.http.Body
+import retrofit2.http.GET
 import retrofit2.http.POST
 
 interface ApiService {
@@ -17,4 +18,7 @@ interface ApiService {
 
     @POST("api/auth/social-login")
     suspend fun socialLogin(@Body request: SocialLoginRequest): Response<LoginResponse>
+
+    @GET("api/dashboard/home/products")
+    suspend fun getProducts(): Response<ProductResponse>
 }

@@ -27,3 +27,26 @@ data class SocialLoginRequest(
     val email: String,
     val userName: String
 )
+
+data class ProductResponse(
+    val success: Boolean,
+    val message: String,
+    val products: List<Product>,
+    val total: Int
+)
+
+data class Product(
+    val id: Int,
+    val name: String,
+    val description: String,
+    val price: Double,
+    val image: String,
+    val category: String,
+    val rating: Rating,
+    val isNew: Boolean
+)
+
+data class Rating(
+    val rate: Double,
+    val count: Int
+)
