@@ -16,7 +16,9 @@ data class LoginRequest(
 
 data class LoginResponse(
     val token: String? = null,
-    val message: String? = null
+    val message: String? = null,
+    val userName: String? = null,
+    val email: String? = null
 )
 
 data class ForgotPasswordRequest(

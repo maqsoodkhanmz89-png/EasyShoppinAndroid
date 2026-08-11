@@ -234,7 +234,6 @@ fun AccountScreen(onLoginClick: () -> Unit, onAddressClick: () -> Unit) {
     }
 
     val menuItems = listOf(
-        Pair("My Profile", Icons.Default.Person),
         Pair("My Orders", Icons.AutoMirrored.Filled.ListAlt),
         Pair("Shipping Address", Icons.Default.LocationOn),
         Pair("Payment Methods", Icons.Default.Payment),
@@ -248,7 +247,10 @@ fun AccountScreen(onLoginClick: () -> Unit, onAddressClick: () -> Unit) {
         contentPadding = PaddingValues(vertical = 8.dp)
     ) {
         item {
-            ProfileHeader()
+            ProfileHeader(
+                userName = SessionManager.userName ?: "User",
+                email = SessionManager.userEmail ?: ""
+            )
         }
         items(menuItems) { item ->
             val context = LocalContext.current
@@ -293,7 +295,7 @@ fun AccountScreen(onLoginClick: () -> Unit, onAddressClick: () -> Unit) {
 }
 
 @Composable
-fun ProfileHeader() {
+fun ProfileHeader(userName: String, email: String) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -316,12 +318,12 @@ fun ProfileHeader() {
         }
         Spacer(modifier = Modifier.height(16.dp))
         Text(
-            text = "John Doe",
+            text = userName,
             style = MaterialTheme.typography.headlineSmall,
             fontWeight = FontWeight.Bold
         )
         Text(
-            text = "john.doe@example.com",
+            text = email,
             style = MaterialTheme.typography.bodyMedium,
             color = Color.Gray
         )

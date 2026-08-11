@@ -39,7 +39,10 @@ class LoginViewModel : ViewModel() {
             try {
                 val response = RetrofitClient.apiService.login(LoginRequest(email, password))
                 if (response.isSuccessful) {
-                    SessionManager.token = response.body()?.token
+                    val body = response.body()
+                    SessionManager.token = body?.token
+                    SessionManager.userName = body?.userName
+                    SessionManager.userEmail = body?.email ?: email
                     _uiState.update { it.copy(isLoading = false, isLoggedIn = true) }
                 } else {
                     val errorBody = response.errorBody()?.string() ?: ""
@@ -87,7 +90,10 @@ class LoginViewModel : ViewModel() {
                 try {
                     val response = RetrofitClient.apiService.socialLogin(request)
                     if (response.isSuccessful) {
-                        SessionManager.token = response.body()?.token
+                        val body = response.body()
+                        SessionManager.token = body?.token
+                        SessionManager.userName = body?.userName ?: request.userName
+                        SessionManager.userEmail = body?.email ?: request.email
                         _uiState.update { it.copy(isLoading = false, isLoggedIn = true) }
                     } else {
                         val errorBody = response.errorBody()?.string() ?: ""

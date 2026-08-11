@@ -6,6 +6,8 @@ import android.content.SharedPreferences
 object SessionManager {
     private const val PREF_NAME = "easy_shopping_prefs"
     private const val KEY_TOKEN = "auth_token"
+    private const val KEY_USER_NAME = "user_name"
+    private const val KEY_USER_EMAIL = "user_email"
     private lateinit var prefs: SharedPreferences
 
     fun init(context: Context) {
@@ -17,6 +19,18 @@ object SessionManager {
         set(value) {
             prefs.edit().putString(KEY_TOKEN, value).apply()
         }
+
+    var userName: String?
+        get() = prefs.getString(KEY_USER_NAME, null)
+        set(value) {
+            prefs.edit().putString(KEY_USER_NAME, value).apply()
+        }
+
+    var userEmail: String?
+        get() = prefs.getString(KEY_USER_EMAIL, null)
+        set(value) {
+            prefs.edit().putString(KEY_USER_EMAIL, value).apply()
+        }
     
     val isLoggedIn: Boolean
         get() = token != null
@@ -26,6 +40,6 @@ object SessionManager {
     }
 
     fun logout() {
-        token = null
+        prefs.edit().clear().apply()
     }
 }
