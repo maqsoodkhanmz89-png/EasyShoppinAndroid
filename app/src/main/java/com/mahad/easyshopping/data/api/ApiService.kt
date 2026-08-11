@@ -89,4 +89,10 @@ interface ApiService {
         @Header("Authorization") token: String,
         @Path("orderId") orderId: String
     ): Response<OrderTrackingResponse>
+
+    @POST("api/auth/logout")
+    suspend fun logout(
+        @Header("Authorization") token: String,
+        @Body body: Map<String, String> = emptyMap()
+    ): Response<LogoutResponse>
 }

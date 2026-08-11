@@ -119,6 +119,10 @@ class CartViewModel : ViewModel() {
             }
         }
     }
+
+    fun clearCart() {
+        _uiState.value = CartUiState()
+    }
 }
 
 data class CartUiState(

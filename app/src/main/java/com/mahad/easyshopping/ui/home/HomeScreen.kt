@@ -160,7 +160,10 @@ fun HomeScreen(
                 HomeTab.Account -> {
                     AccountScreen(
                         onLoginClick = onLoginClick,
-                        onAddressClick = onAddressClick
+                        onAddressClick = onAddressClick,
+                        onLogoutSuccess = { selectedTab = HomeTab.Home },
+                        homeViewModel = viewModel,
+                        cartViewModel = cartViewModel
                     )
                 }
                 else -> {
@@ -197,7 +200,7 @@ fun HomeScreen(
 @Composable
 fun AccountScreenPreview() {
     MaterialTheme {
-        AccountScreen(onLoginClick = {}, onAddressClick = {})
+        AccountScreen(onLoginClick = {}, onAddressClick = {}, onLogoutSuccess = {})
     }
 }
 
@@ -210,7 +213,41 @@ fun HomeScreenPreview() {
 }
 
 @Composable
-fun AccountScreen(onLoginClick: () -> Unit, onAddressClick: () -> Unit) {
+fun AccountScreen(
+    onLoginClick: () -> Unit, 
+    onAddressClick: () -> Unit,
+    onLogoutSuccess: () -> Unit,
+    homeViewModel: HomeViewModel = viewModel(),
+    cartViewModel: CartViewModel = viewModel()
+) {
+    var showLogoutDialog by remember { mutableStateOf(false) }
+
+    if (showLogoutDialog) {
+        AlertDialog(
+            onDismissRequest = { showLogoutDialog = false },
+            title = { Text("Logout") },
+            text = { Text("Are you sure you want to logout?") },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        showLogoutDialog = false
+                        homeViewModel.logout(onSuccess = {
+                            cartViewModel.clearCart()
+                            onLogoutSuccess()
+                        })
+                    }
+                ) {
+                    Text("Logout")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showLogoutDialog = false }) {
+                    Text("Cancel")
+                }
+            }
+        )
+    }
+
     if (!SessionManager.isLoggedIn) {
         Column(
             modifier = Modifier.fillMaxSize(),
@@ -276,8 +313,7 @@ fun AccountScreen(onLoginClick: () -> Unit, onAddressClick: () -> Unit) {
                         when (item.first) {
                             "Shipping Address" -> onAddressClick()
                             "Logout" -> {
-                                SessionManager.logout()
-                                onLoginClick()
+                                showLogoutDialog = true
                             }
                             else -> {
                                 // Other items not implemented yet

@@ -38,6 +38,7 @@ class MainActivity : ComponentActivity() {
                     composable("login") {
                         LoginScreen(
                             onLoginSuccess = {
+                                cartViewModel.fetchCart()
                                 if (navController.previousBackStackEntry != null) {
                                     navController.popBackStack()
                                 } else {

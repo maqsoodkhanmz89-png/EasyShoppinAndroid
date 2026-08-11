@@ -241,3 +241,9 @@ data class OrderTrackingResponse(
     val message: String,
     val tracking: Tracking
 )
+
+data class LogoutResponse(
+    val success: Boolean,
+    val message: String,
+    val loggedOutAt: String? = null
+)

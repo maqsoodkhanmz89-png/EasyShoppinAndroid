@@ -2,6 +2,7 @@ package com.mahad.easyshopping.ui.home
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.mahad.easyshopping.data.SessionManager
 import com.mahad.easyshopping.data.api.RetrofitClient
 import com.mahad.easyshopping.data.model.Product
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -46,6 +47,29 @@ class HomeViewModel : ViewModel() {
                         errorMessage = e.message ?: "An error occurred" 
                     ) 
                 }
+            }
+        }
+    }
+
+    fun logout(onSuccess: () -> Unit) {
+        val token = SessionManager.getBearerToken()
+        if (token == null) {
+            SessionManager.logout()
+            onSuccess()
+            return
+        }
+
+        viewModelScope.launch {
+            try {
+                val response = RetrofitClient.apiService.logout(token, emptyMap())
+                if (response.isSuccessful) {
+                    SessionManager.logout()
+                    onSuccess()
+                } else {
+                    _uiState.update { it.copy(errorMessage = "Logout failed") }
+                }
+            } catch (e: Exception) {
+                _uiState.update { it.copy(errorMessage = e.message ?: "An error occurred") }
             }
         }
     }
