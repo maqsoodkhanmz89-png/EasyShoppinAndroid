@@ -13,6 +13,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.mahad.easyshopping.data.model.Order
 
+import java.util.Locale
+
 @Composable
 fun OrderSuccessScreen(
     order: Order,
@@ -55,6 +57,28 @@ fun OrderSuccessScreen(
             style = MaterialTheme.typography.bodyMedium,
             color = Color.Gray
         )
+
+        if (order.payment.paymentMethod == "CASH ON DELIVERY") {
+            Spacer(modifier = Modifier.height(8.dp))
+            Text(
+                text = "Amount to be Collected: $${String.format(Locale.getDefault(), "%.2f", order.pricing.totalAmount)}",
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.primary
+            )
+            Text(
+                text = "Payment Status: ${order.payment.status.uppercase()}",
+                style = MaterialTheme.typography.bodyMedium,
+                color = Color.Gray
+            )
+            order.payment.collectionDetails?.let { details ->
+                Text(
+                    text = "Expected Collection: ${details.expectedCollectionDate.take(10)}",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = Color.Gray
+                )
+            }
+        }
         
         Spacer(modifier = Modifier.height(48.dp))
         

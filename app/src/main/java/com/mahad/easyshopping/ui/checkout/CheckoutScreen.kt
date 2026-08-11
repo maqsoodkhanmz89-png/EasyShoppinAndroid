@@ -236,7 +236,8 @@ fun PaymentMethodSelector(selectedMethod: String, onMethodSelected: (String) -> 
         "credit_card" to "Credit Card",
         "debit_card" to "Debit Card",
         "paypal" to "PayPal",
-        "google_pay" to "Google Pay"
+        "google_pay" to "Google Pay",
+        "cash_on_delivery" to "Cash on Delivery"
     )
 
     Column(Modifier.selectableGroup()) {

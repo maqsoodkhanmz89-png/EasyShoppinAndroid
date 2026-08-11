@@ -169,11 +169,21 @@ data class Coupon(
 ) : Parcelable
 
 @Parcelize
+data class CollectionDetails(
+    val expectedCollectionDate: String,
+    val collectionStatus: String,
+    val collectionAgent: String? = null
+) : Parcelable
+
+@Parcelize
 data class Payment(
     val transactionId: String,
     val paymentMethod: String,
     val amount: Double,
-    val status: String
+    val status: String,
+    val timestamp: String,
+    val reference: String,
+    val collectionDetails: CollectionDetails? = null
 ) : Parcelable
 
 @Parcelize
