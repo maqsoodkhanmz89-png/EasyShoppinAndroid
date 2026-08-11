@@ -26,6 +26,7 @@ import java.util.Locale
 @Composable
 fun CartScreen(
     onBackClick: () -> Unit,
+    onCheckoutClick: () -> Unit,
     viewModel: CartViewModel = viewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
@@ -43,7 +44,7 @@ fun CartScreen(
         },
         bottomBar = {
             if (uiState.cartItems.isNotEmpty()) {
-                CartSummary(uiState.subtotal)
+                CartSummary(uiState.subtotal, onCheckoutClick)
             }
         }
     ) { innerPadding ->
@@ -142,7 +143,7 @@ fun CartItemRow(
 }
 
 @Composable
-fun CartSummary(subtotal: Double) {
+fun CartSummary(subtotal: Double, onCheckoutClick: () -> Unit) {
     Surface(
         tonalElevation = 8.dp,
         shadowElevation = 8.dp
@@ -166,7 +167,7 @@ fun CartSummary(subtotal: Double) {
             }
             Spacer(modifier = Modifier.height(16.dp))
             Button(
-                onClick = { /* Checkout */ },
+                onClick = onCheckoutClick,
                 modifier = Modifier.fillMaxWidth(),
                 shape = androidx.compose.foundation.shape.RoundedCornerShape(8.dp)
             ) {

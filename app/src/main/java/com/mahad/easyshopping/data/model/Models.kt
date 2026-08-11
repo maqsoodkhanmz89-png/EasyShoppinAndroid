@@ -123,3 +123,109 @@ data class AddressActionResponse(
     val message: String,
     val address: Address? = null
 )
+
+@Parcelize
+data class CardDetails(
+    val cardNumber: String,
+    val cardType: String,
+    val holderName: String
+) : Parcelable
+
+data class PlaceOrderRequest(
+    val shippingAddressId: String? = null,
+    val paymentMethod: String,
+    val cardDetails: CardDetails? = null,
+    val couponCode: String? = null,
+    val notes: String? = null
+)
+
+@Parcelize
+data class OrderItem(
+    val productId: String,
+    val name: String,
+    val price: Double,
+    val quantity: Int,
+    val image: String,
+    val itemTotal: Double
+) : Parcelable
+
+@Parcelize
+data class Pricing(
+    val itemsSubtotal: Double,
+    val discount: Double,
+    val discountPercentage: Int,
+    val tax: Double,
+    val taxPercentage: Int,
+    val shippingCharges: Double,
+    val totalAmount: Double
+) : Parcelable
+
+@Parcelize
+data class Coupon(
+    val code: String,
+    val description: String,
+    val discountPercentage: Int,
+    val discountAmount: Double
+) : Parcelable
+
+@Parcelize
+data class Payment(
+    val transactionId: String,
+    val paymentMethod: String,
+    val amount: Double,
+    val status: String
+) : Parcelable
+
+@Parcelize
+data class Tracking(
+    val currentStatus: String,
+    val estimatedDeliveryDate: String,
+    val shippingMethod: String,
+    val trackingNumber: String?
+) : Parcelable
+
+@Parcelize
+data class Order(
+    val orderId: String,
+    val userId: String,
+    val userEmail: String,
+    val userName: String,
+    val status: String,
+    val orderDate: String,
+    val items: List<OrderItem>,
+    val shippingAddress: Address,
+    val pricing: Pricing,
+    val coupon: Coupon? = null,
+    val payment: Payment,
+    val tracking: Tracking,
+    val notes: String,
+    val invoiceGenerated: Boolean,
+    val invoiceUrl: String,
+    val createdAt: String
+) : Parcelable
+
+data class PlaceOrderResponse(
+    val success: Boolean,
+    val message: String,
+    val order: Order,
+    val details: Order
+)
+
+data class OrderListResponse(
+    val success: Boolean,
+    val message: String,
+    val orders: List<Order>,
+    val total: Int
+)
+
+data class OrderDetailsResponse(
+    val success: Boolean,
+    val message: String,
+    val order: Order
+)
+
+data class OrderTrackingResponse(
+    val success: Boolean,
+    val message: String,
+    val tracking: Tracking
+)

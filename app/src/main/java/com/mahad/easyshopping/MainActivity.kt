@@ -18,7 +18,10 @@ import com.mahad.easyshopping.ui.cart.CartScreen
 import com.mahad.easyshopping.ui.details.ProductDetailsScreen
 import com.mahad.easyshopping.ui.address.AddressListScreen
 import com.mahad.easyshopping.ui.address.AddEditAddressScreen
+import com.mahad.easyshopping.ui.checkout.CheckoutScreen
+import com.mahad.easyshopping.ui.order.OrderSuccessScreen
 import com.mahad.easyshopping.data.model.Address
+import com.mahad.easyshopping.data.model.Order
 import com.mahad.easyshopping.ui.theme.EasyShoppingTheme
 
 class MainActivity : ComponentActivity() {
@@ -98,6 +101,9 @@ class MainActivity : ComponentActivity() {
                             onBackClick = {
                                 navController.popBackStack()
                             },
+                            onCheckoutClick = {
+                                navController.navigate("checkout")
+                            },
                             viewModel = cartViewModel
                         )
                     }
@@ -118,6 +124,36 @@ class MainActivity : ComponentActivity() {
                             onBackClick = { navController.popBackStack() },
                             onSuccess = { navController.popBackStack() }
                         )
+                    }
+                    composable("checkout") {
+                        CheckoutScreen(
+                            onBackClick = { navController.popBackStack() },
+                            onSuccess = { order ->
+                                navController.currentBackStackEntry?.savedStateHandle?.set("order", order)
+                                navController.navigate("order_success") {
+                                    popUpTo("cart") { inclusive = true }
+                                }
+                            },
+                            onAddAddressClick = {
+                                navController.navigate("add_edit_address")
+                            }
+                        )
+                    }
+                    composable("order_success") {
+                        val order = navController.previousBackStackEntry?.savedStateHandle?.get<Order>("order")
+                        if (order != null) {
+                            OrderSuccessScreen(
+                                order = order,
+                                onContinueShoppingClick = {
+                                    navController.navigate("home") {
+                                        popUpTo("home") { inclusive = true }
+                                    }
+                                },
+                                onViewOrderDetailsClick = { orderId ->
+                                    // Navigate to order details if implemented
+                                }
+                            )
+                        }
                     }
                 }
             }

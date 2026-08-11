@@ -64,4 +64,29 @@ interface ApiService {
         @Header("Authorization") token: String,
         @Path("id") addressId: String
     ): Response<AddressActionResponse>
+
+    @POST("api/orders/place")
+    suspend fun placeOrder(
+        @Header("Authorization") token: String,
+        @Body request: PlaceOrderRequest
+    ): Response<PlaceOrderResponse>
+
+    @GET("api/orders")
+    suspend fun getOrders(
+        @Header("Authorization") token: String,
+        @Query("page") page: Int = 1,
+        @Query("limit") limit: Int = 10
+    ): Response<OrderListResponse>
+
+    @GET("api/orders/{orderId}")
+    suspend fun getOrderDetails(
+        @Header("Authorization") token: String,
+        @Path("orderId") orderId: String
+    ): Response<OrderDetailsResponse>
+
+    @GET("api/orders/{orderId}/track")
+    suspend fun trackOrder(
+        @Header("Authorization") token: String,
+        @Path("orderId") orderId: String
+    ): Response<OrderTrackingResponse>
 }
