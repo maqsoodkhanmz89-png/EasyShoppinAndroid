@@ -1,6 +1,7 @@
 package com.mahad.easyshopping.ui.home
 
 import android.app.Activity
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
@@ -45,6 +46,7 @@ fun HomeScreen(
     onProductClick: (Int) -> Unit,
     onCartClick: () -> Unit,
     onLoginClick: () -> Unit,
+    onAddressClick: () -> Unit,
     viewModel: HomeViewModel = viewModel(),
     cartViewModel: CartViewModel = viewModel()
 ) {
@@ -156,7 +158,10 @@ fun HomeScreen(
                     }
                 }
                 HomeTab.Account -> {
-                    AccountScreen(onLoginClick = onLoginClick)
+                    AccountScreen(
+                        onLoginClick = onLoginClick,
+                        onAddressClick = onAddressClick
+                    )
                 }
                 else -> {
                     // Placeholder for other tabs
@@ -192,7 +197,7 @@ fun HomeScreen(
 @Composable
 fun AccountScreenPreview() {
     MaterialTheme {
-        AccountScreen(onLoginClick = {})
+        AccountScreen(onLoginClick = {}, onAddressClick = {})
     }
 }
 
@@ -200,12 +205,12 @@ fun AccountScreenPreview() {
 @Composable
 fun HomeScreenPreview() {
     MaterialTheme {
-        HomeScreen(onCartClick = {}, onProductClick = {}, onLoginClick = {})
+        HomeScreen(onCartClick = {}, onProductClick = {}, onLoginClick = {}, onAddressClick = {})
     }
 }
 
 @Composable
-fun AccountScreen(onLoginClick: () -> Unit) {
+fun AccountScreen(onLoginClick: () -> Unit, onAddressClick: () -> Unit) {
     if (!SessionManager.isLoggedIn) {
         Column(
             modifier = Modifier.fillMaxSize(),
@@ -246,6 +251,7 @@ fun AccountScreen(onLoginClick: () -> Unit) {
             ProfileHeader()
         }
         items(menuItems) { item ->
+            val context = LocalContext.current
             ListItem(
                 headlineContent = { Text(item.first) },
                 leadingContent = { 
@@ -262,7 +268,20 @@ fun AccountScreen(onLoginClick: () -> Unit) {
                         tint = Color.Gray
                     ) 
                 },
-                modifier = Modifier.padding(horizontal = 8.dp)
+                modifier = Modifier
+                    .padding(horizontal = 8.dp)
+                    .clickable {
+                        when (item.first) {
+                            "Shipping Address" -> onAddressClick()
+                            "Logout" -> {
+                                SessionManager.logout()
+                                onLoginClick()
+                            }
+                            else -> {
+                                // Other items not implemented yet
+                            }
+                        }
+                    }
             )
             HorizontalDivider(
                 modifier = Modifier.padding(horizontal = 16.dp),

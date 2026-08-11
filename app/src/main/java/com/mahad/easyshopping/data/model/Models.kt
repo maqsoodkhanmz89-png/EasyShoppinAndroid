@@ -1,5 +1,8 @@
 package com.mahad.easyshopping.data.model
 
+import android.os.Parcelable
+import kotlinx.parcelize.Parcelize
+
 data class RegisterRequest(
     val userName: String,
     val email: String,
@@ -78,4 +81,45 @@ data class AddToCartRequest(
 data class UpdateCartRequest(
     val productId: String,
     val quantity: Int
+)
+
+@Parcelize
+data class Address(
+    val id: String,
+    val type: String,
+    val addressLine1: String,
+    val addressLine2: String? = null,
+    val city: String,
+    val state: String,
+    val country: String,
+    val zipCode: String,
+    val phoneNumber: String,
+    val isDefault: Boolean,
+    val createdAt: String? = null,
+    val updatedAt: String? = null
+) : Parcelable
+
+data class AddressRequest(
+    val type: String,
+    val addressLine1: String,
+    val addressLine2: String? = null,
+    val city: String,
+    val state: String,
+    val country: String,
+    val zipCode: String,
+    val phoneNumber: String,
+    val isDefault: Boolean
+)
+
+data class AddressListResponse(
+    val success: Boolean,
+    val message: String,
+    val addresses: List<Address>,
+    val total: Int
+)
+
+data class AddressActionResponse(
+    val success: Boolean,
+    val message: String,
+    val address: Address? = null
 )

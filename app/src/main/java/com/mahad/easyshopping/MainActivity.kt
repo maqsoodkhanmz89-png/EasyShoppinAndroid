@@ -16,6 +16,9 @@ import com.mahad.easyshopping.ui.home.HomeScreen
 import com.mahad.easyshopping.ui.login.LoginScreen
 import com.mahad.easyshopping.ui.cart.CartScreen
 import com.mahad.easyshopping.ui.details.ProductDetailsScreen
+import com.mahad.easyshopping.ui.address.AddressListScreen
+import com.mahad.easyshopping.ui.address.AddEditAddressScreen
+import com.mahad.easyshopping.data.model.Address
 import com.mahad.easyshopping.ui.theme.EasyShoppingTheme
 
 class MainActivity : ComponentActivity() {
@@ -72,6 +75,9 @@ class MainActivity : ComponentActivity() {
                             onLoginClick = {
                                 navController.navigate("login")
                             },
+                            onAddressClick = {
+                                navController.navigate("address_list")
+                            },
                             cartViewModel = cartViewModel
                         )
                     }
@@ -93,6 +99,24 @@ class MainActivity : ComponentActivity() {
                                 navController.popBackStack()
                             },
                             viewModel = cartViewModel
+                        )
+                    }
+                    composable("address_list") {
+                        AddressListScreen(
+                            onBackClick = { navController.popBackStack() },
+                            onAddAddressClick = { navController.navigate("add_edit_address") },
+                            onEditAddressClick = { address ->
+                                navController.currentBackStackEntry?.savedStateHandle?.set("address", address)
+                                navController.navigate("add_edit_address")
+                            }
+                        )
+                    }
+                    composable("add_edit_address") {
+                        val address = navController.previousBackStackEntry?.savedStateHandle?.get<Address>("address")
+                        AddEditAddressScreen(
+                            address = address,
+                            onBackClick = { navController.popBackStack() },
+                            onSuccess = { navController.popBackStack() }
                         )
                     }
                 }

@@ -40,4 +40,28 @@ interface ApiService {
         @Header("Authorization") token: String,
         @Path("productId") productId: String
     ): Response<CartResponse>
+
+    @GET("api/addresses")
+    suspend fun getAddresses(
+        @Header("Authorization") token: String
+    ): Response<AddressListResponse>
+
+    @POST("api/addresses")
+    suspend fun addAddress(
+        @Header("Authorization") token: String,
+        @Body request: AddressRequest
+    ): Response<AddressActionResponse>
+
+    @PUT("api/addresses/{id}")
+    suspend fun updateAddress(
+        @Header("Authorization") token: String,
+        @Path("id") addressId: String,
+        @Body request: AddressRequest
+    ): Response<AddressActionResponse>
+
+    @DELETE("api/addresses/{id}")
+    suspend fun deleteAddress(
+        @Header("Authorization") token: String,
+        @Path("id") addressId: String
+    ): Response<AddressActionResponse>
 }
