@@ -13,6 +13,8 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.CheckCircle
+import androidx.compose.material.icons.filled.ConfirmationNumber
+import androidx.compose.material.icons.filled.EditNote
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -65,7 +67,18 @@ fun CheckoutScreen(
             // Shipping Address Section
             SectionHeader(title = "Shipping Address", action = "Add New", onActionClick = onAddAddressClick)
             if (uiState.addresses.isEmpty()) {
-                Text("No addresses found. Please add one.", color = Color.Gray)
+                Surface(
+                    modifier = Modifier.fillMaxWidth(),
+                    color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f),
+                    shape = MaterialTheme.shapes.medium
+                ) {
+                    Text(
+                        "No addresses found. Please add one.", 
+                        color = Color.Gray,
+                        modifier = Modifier.padding(16.dp),
+                        textAlign = androidx.compose.ui.text.style.TextAlign.Center
+                    )
+                }
             } else {
                 LazyRow(
                     modifier = Modifier.fillMaxWidth(),
@@ -144,17 +157,21 @@ fun CheckoutScreen(
             OutlinedTextField(
                 value = uiState.couponCode,
                 onValueChange = { viewModel.updateCouponCode(it) },
-                label = { Text("Coupon Code (Optional)") },
+                label = { Text("Coupon Code") },
                 modifier = Modifier.fillMaxWidth(),
-                singleLine = true
+                singleLine = true,
+                shape = MaterialTheme.shapes.medium,
+                leadingIcon = { Icon(Icons.Default.ConfirmationNumber, contentDescription = null) }
             )
 
             // Notes
             OutlinedTextField(
                 value = uiState.notes,
                 onValueChange = { viewModel.updateNotes(it) },
-                label = { Text("Delivery Notes (Optional)") },
-                modifier = Modifier.fillMaxWidth()
+                label = { Text("Delivery Notes") },
+                modifier = Modifier.fillMaxWidth(),
+                shape = MaterialTheme.shapes.medium,
+                leadingIcon = { Icon(Icons.Default.EditNote, contentDescription = null) }
             )
 
             // Order Summary

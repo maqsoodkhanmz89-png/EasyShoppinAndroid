@@ -2,10 +2,16 @@ package com.mahad.easyshopping.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
-val Purple80 = Color(0xFFD0BCFF)
-val PurpleGrey80 = Color(0xFFCCC2DC)
-val Pink80 = Color(0xFFEFB8C8)
+val BluePrimary = Color(0xFF1A73E8)
+val BlueSecondary = Color(0xFF4285F4)
+val BlueTertiary = Color(0xFFE8F0FE)
 
-val Purple40 = Color(0xFF6650a4)
-val PurpleGrey40 = Color(0xFF625b71)
-val Pink40 = Color(0xFF7D5260)
+val Background = Color(0xFFFFFFFF)
+val Surface = Color(0xFFF8F9FA)
+val OnSurface = Color(0xFF202124)
+val Error = Color(0xFFD93025)
+val Success = Color(0xFF1E8E3E)
+
+val DarkBluePrimary = Color(0xFF8AB4F8)
+val DarkBackground = Color(0xFF202124)
+val DarkSurface = Color(0xFF303134)

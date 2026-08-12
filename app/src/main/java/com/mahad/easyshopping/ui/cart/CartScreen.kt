@@ -84,6 +84,8 @@ fun CartItemRow(
 ) {
     Card(
         modifier = Modifier.fillMaxWidth(),
+        shape = MaterialTheme.shapes.medium,
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
         elevation = CardDefaults.cardElevation(2.dp)
     ) {
         Row(
@@ -168,10 +170,12 @@ fun CartSummary(subtotal: Double, onCheckoutClick: () -> Unit) {
             Spacer(modifier = Modifier.height(16.dp))
             Button(
                 onClick = onCheckoutClick,
-                modifier = Modifier.fillMaxWidth(),
-                shape = androidx.compose.foundation.shape.RoundedCornerShape(8.dp)
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(56.dp),
+                shape = MaterialTheme.shapes.medium
             ) {
-                Text("Checkout", modifier = Modifier.padding(8.dp))
+                Text("Proceed to Checkout", style = MaterialTheme.typography.titleMedium)
             }
         }
     }
