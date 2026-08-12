@@ -7,6 +7,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.ChevronRight
+import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -28,12 +29,6 @@ fun OrderHistoryScreen(
     onOrderClick: (String) -> Unit,
     viewModel: OrderViewModel = viewModel()
 ) {
-    val uiState by viewModel.uiState.collectAsState()
-
-    LaunchedEffect(Unit) {
-        viewModel.fetchOrders()
-    }
-
     Scaffold(
         topBar = {
             TopAppBar(
@@ -46,38 +41,78 @@ fun OrderHistoryScreen(
             )
         }
     ) { innerPadding ->
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(innerPadding)
-        ) {
-            if (uiState.isLoading && uiState.orders.isEmpty()) {
-                CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
-            } else if (uiState.errorMessage != null && uiState.orders.isEmpty()) {
-                Text(
-                    text = uiState.errorMessage!!,
-                    color = MaterialTheme.colorScheme.error,
-                    modifier = Modifier.align(Alignment.Center)
-                )
-            } else if (uiState.orders.isEmpty()) {
-                Text(
-                    text = "No orders found.",
-                    modifier = Modifier.align(Alignment.Center),
-                    style = MaterialTheme.typography.bodyLarge,
-                    color = Color.Gray
-                )
-            } else {
-                LazyColumn(
-                    modifier = Modifier.fillMaxSize(),
-                    contentPadding = PaddingValues(16.dp),
-                    verticalArrangement = Arrangement.spacedBy(16.dp)
-                ) {
-                    items(uiState.orders) { order ->
-                        OrderItemCard(order = order, onClick = { onOrderClick(order.orderId) })
-                    }
+        OrderHistoryContent(
+            onOrderClick = onOrderClick,
+            modifier = Modifier.padding(innerPadding),
+            viewModel = viewModel
+        )
+    }
+}
+
+@Composable
+fun OrderHistoryContent(
+    onOrderClick: (String) -> Unit,
+    modifier: Modifier = Modifier,
+    viewModel: OrderViewModel = viewModel()
+) {
+    val uiState by viewModel.uiState.collectAsState()
+
+    LaunchedEffect(Unit) {
+        viewModel.fetchOrders()
+    }
+
+    Box(
+        modifier = modifier.fillMaxSize()
+    ) {
+        if (uiState.isLoading && uiState.orders.isEmpty()) {
+            CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+        } else if (uiState.errorMessage != null && uiState.orders.isEmpty()) {
+            Text(
+                text = uiState.errorMessage!!,
+                color = MaterialTheme.colorScheme.error,
+                modifier = Modifier.align(Alignment.Center)
+            )
+        } else if (uiState.orders.isEmpty()) {
+            EmptyOrdersView(modifier = Modifier.align(Alignment.Center))
+        } else {
+            LazyColumn(
+                modifier = Modifier.fillMaxSize(),
+                contentPadding = PaddingValues(16.dp),
+                verticalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+                items(uiState.orders) { order ->
+                    OrderItemCard(order = order, onClick = { onOrderClick(order.orderId) })
                 }
             }
         }
+    }
+}
+
+@Composable
+fun EmptyOrdersView(modifier: Modifier = Modifier) {
+    Column(
+        modifier = modifier.padding(24.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+        Icon(
+            imageVector = Icons.Default.ShoppingCart,
+            contentDescription = null,
+            modifier = Modifier.size(80.dp),
+            tint = Color.LightGray
+        )
+        Spacer(modifier = Modifier.height(16.dp))
+        Text(
+            text = "No orders yet",
+            style = MaterialTheme.typography.headlineSmall,
+            fontWeight = FontWeight.Bold
+        )
+        Text(
+            text = "When you place an order, it will appear here.",
+            style = MaterialTheme.typography.bodyLarge,
+            color = Color.Gray,
+            textAlign = androidx.compose.ui.text.style.TextAlign.Center
+        )
     }
 }
 

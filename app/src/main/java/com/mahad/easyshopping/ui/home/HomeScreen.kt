@@ -31,6 +31,8 @@ import coil.compose.AsyncImage
 import com.mahad.easyshopping.data.SessionManager
 import com.mahad.easyshopping.data.model.Product
 import com.mahad.easyshopping.ui.cart.CartViewModel
+import com.mahad.easyshopping.ui.order.OrderHistoryContent
+import com.mahad.easyshopping.ui.order.OrderViewModel
 
 sealed class HomeTab(val title: String, val icon: ImageVector) {
     object Home : HomeTab("Home", Icons.Filled.Home)
@@ -48,8 +50,10 @@ fun HomeScreen(
     onLoginClick: () -> Unit,
     onAddressClick: () -> Unit,
     onOrdersClick: () -> Unit,
+    onOrderDetailsClick: (String) -> Unit,
     viewModel: HomeViewModel = viewModel(),
-    cartViewModel: CartViewModel = viewModel()
+    cartViewModel: CartViewModel = viewModel(),
+    orderViewModel: OrderViewModel = viewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val cartUiState by cartViewModel.uiState.collectAsState()
@@ -162,11 +166,21 @@ fun HomeScreen(
                     AccountScreen(
                         onLoginClick = onLoginClick,
                         onAddressClick = onAddressClick,
-                        onOrdersClick = onOrdersClick,
+                        onOrdersClick = { selectedTab = HomeTab.MyOrders },
                         onLogoutSuccess = { selectedTab = HomeTab.Home },
                         homeViewModel = viewModel,
                         cartViewModel = cartViewModel
                     )
+                }
+                HomeTab.MyOrders -> {
+                    if (SessionManager.isLoggedIn) {
+                        OrderHistoryContent(
+                            onOrderClick = onOrderDetailsClick,
+                            viewModel = orderViewModel
+                        )
+                    } else {
+                        LoginRequiredView(onLoginClick = onLoginClick)
+                    }
                 }
                 else -> {
                     // Placeholder for other tabs
@@ -215,8 +229,31 @@ fun HomeScreenPreview() {
             onProductClick = {}, 
             onLoginClick = {}, 
             onAddressClick = {},
-            onOrdersClick = {}
+            onOrdersClick = {},
+            onOrderDetailsClick = {}
         )
+    }
+}
+
+@Composable
+fun LoginRequiredView(onLoginClick: () -> Unit) {
+    Column(
+        modifier = Modifier.fillMaxSize(),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Icon(
+            imageVector = Icons.Default.Lock,
+            contentDescription = null,
+            modifier = Modifier.size(80.dp),
+            tint = Color.LightGray
+        )
+        Spacer(modifier = Modifier.height(16.dp))
+        Text("Please login to see this content", style = MaterialTheme.typography.titleMedium)
+        Spacer(modifier = Modifier.height(24.dp))
+        Button(onClick = onLoginClick) {
+            Text("Login")
+        }
     }
 }
 

@@ -33,6 +33,7 @@ fun OrderDetailsScreen(
     onBackClick: () -> Unit,
     onRateItemClick: (String, String) -> Unit,
     onReorderSuccess: () -> Unit,
+    onCancelSuccess: () -> Unit,
     viewModel: OrderViewModel = viewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
@@ -60,7 +61,7 @@ fun OrderDetailsScreen(
         ) {
             if (uiState.isLoadingDetails) {
                 CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
-            } else if (uiState.errorMessage != null) {
+            } else if (uiState.errorMessage != null && !uiState.isLoadingAction) {
                 Text(
                     text = uiState.errorMessage!!,
                     color = MaterialTheme.colorScheme.error,
@@ -71,10 +72,11 @@ fun OrderDetailsScreen(
                     OrderDetailsContent(
                         order = order,
                         trackingHistory = uiState.trackingHistory,
-                        onCancelClick = { viewModel.cancelOrder(order.orderId, "User request") },
+                        onCancelClick = { viewModel.cancelOrder(order.orderId, "User request", onCancelSuccess) },
                         onReorderClick = { viewModel.reorder(order.orderId, onReorderSuccess) },
                         onRateItemClick = { itemId -> onRateItemClick(order.orderId, itemId) },
-                        isLoadingAction = uiState.isLoadingAction
+                        isLoadingAction = uiState.isLoadingAction,
+                        errorMessage = uiState.errorMessage
                     )
                 }
             }
@@ -89,7 +91,8 @@ fun OrderDetailsContent(
     onCancelClick: () -> Unit,
     onReorderClick: () -> Unit,
     onRateItemClick: (String) -> Unit,
-    isLoadingAction: Boolean
+    isLoadingAction: Boolean,
+    errorMessage: String? = null
 ) {
     Column(
         modifier = Modifier
@@ -98,6 +101,20 @@ fun OrderDetailsContent(
             .verticalScroll(rememberScrollState()),
         verticalArrangement = Arrangement.spacedBy(24.dp)
     ) {
+        if (errorMessage != null) {
+            Surface(
+                color = MaterialTheme.colorScheme.errorContainer,
+                shape = MaterialTheme.shapes.small,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text(
+                    text = errorMessage, 
+                    color = MaterialTheme.colorScheme.onErrorContainer, 
+                    style = MaterialTheme.typography.bodyMedium,
+                    modifier = Modifier.padding(12.dp)
+                )
+            }
+        }
         // Order ID and Status
         Row(
             modifier = Modifier.fillMaxWidth(),

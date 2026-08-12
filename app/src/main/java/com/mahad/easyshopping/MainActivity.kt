@@ -88,6 +88,9 @@ class MainActivity : ComponentActivity() {
                             onOrdersClick = {
                                 navController.navigate("order_history")
                             },
+                            onOrderDetailsClick = { orderId ->
+                                navController.navigate("order_details/$orderId")
+                            },
                             cartViewModel = cartViewModel
                         )
                     }
@@ -135,10 +138,10 @@ class MainActivity : ComponentActivity() {
                     composable("checkout") {
                         CheckoutScreen(
                             onBackClick = { navController.popBackStack() },
-                            onSuccess = { order ->
-                                navController.currentBackStackEntry?.savedStateHandle?.set("order", order)
-                                navController.navigate("order_success") {
-                                    popUpTo("cart") { inclusive = true }
+                            onSuccess = {
+                                cartViewModel.clearCart()
+                                navController.navigate("home") {
+                                    popUpTo("home") { inclusive = true }
                                 }
                             },
                             onAddAddressClick = {
@@ -180,6 +183,9 @@ class MainActivity : ComponentActivity() {
                             },
                             onReorderSuccess = {
                                 navController.navigate("cart")
+                            },
+                            onCancelSuccess = {
+                                navController.popBackStack()
                             }
                         )
                     }

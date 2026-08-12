@@ -162,7 +162,18 @@ fun CheckoutScreen(
             OrderSummary(subtotal = uiState.subtotal)
 
             if (uiState.errorMessage != null) {
-                Text(text = uiState.errorMessage!!, color = MaterialTheme.colorScheme.error)
+                Surface(
+                    color = MaterialTheme.colorScheme.errorContainer,
+                    shape = MaterialTheme.shapes.small,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text(
+                        text = uiState.errorMessage!!,
+                        color = MaterialTheme.colorScheme.onErrorContainer,
+                        modifier = Modifier.padding(12.dp),
+                        style = MaterialTheme.typography.bodyMedium
+                    )
+                }
             }
 
             Button(

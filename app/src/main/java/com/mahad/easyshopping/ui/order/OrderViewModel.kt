@@ -76,16 +76,18 @@ class OrderViewModel : ViewModel() {
         }
     }
 
-    fun cancelOrder(orderId: String, reason: String) {
+    fun cancelOrder(orderId: String, reason: String, onSuccess: () -> Unit) {
         val token = SessionManager.getBearerToken() ?: return
         viewModelScope.launch {
-            _uiState.update { it.copy(isLoadingAction = true) }
+            _uiState.update { it.copy(isLoadingAction = true, errorMessage = null) }
             try {
                 val response = RetrofitClient.apiService.cancelOrder(token, orderId, CancelOrderRequest(reason))
                 if (response.isSuccessful) {
-                    fetchOrderDetails(orderId)
+                    _uiState.update { it.copy(isLoadingAction = false) }
+                    onSuccess()
                 } else {
-                    _uiState.update { it.copy(isLoadingAction = false, errorMessage = "Cancellation failed") }
+                    val errorMsg = response.errorBody()?.string() ?: "Cancellation failed"
+                    _uiState.update { it.copy(isLoadingAction = false, errorMessage = errorMsg) }
                 }
             } catch (e: Exception) {
                 _uiState.update { it.copy(isLoadingAction = false, errorMessage = e.message) }
