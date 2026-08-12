@@ -53,25 +53,25 @@ fun OrderSuccessScreen(
         )
         
         Text(
-            text = "Estimated Delivery: ${order.tracking.estimatedDeliveryDate.take(10)}",
+            text = "Estimated Delivery: ${order.tracking?.estimatedDeliveryDate?.take(10) ?: "TBD"}",
             style = MaterialTheme.typography.bodyMedium,
             color = Color.Gray
         )
 
-        if (order.payment.paymentMethod == "CASH ON DELIVERY") {
+        if (order.payment?.paymentMethod == "CASH ON DELIVERY") {
             Spacer(modifier = Modifier.height(8.dp))
             Text(
-                text = "Amount to be Collected: $${String.format(Locale.getDefault(), "%.2f", order.pricing.totalAmount)}",
+                text = "Amount to be Collected: $${String.format(Locale.getDefault(), "%.2f", order.pricing?.totalAmount ?: order.total)}",
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.primary
             )
             Text(
-                text = "Payment Status: ${order.payment.status.uppercase()}",
+                text = "Payment Status: ${order.payment?.status?.uppercase() ?: "PENDING"}",
                 style = MaterialTheme.typography.bodyMedium,
                 color = Color.Gray
             )
-            order.payment.collectionDetails?.let { details ->
+            order.payment?.collectionDetails?.let { details ->
                 Text(
                     text = "Expected Collection: ${details.expectedCollectionDate.take(10)}",
                     style = MaterialTheme.typography.bodySmall,

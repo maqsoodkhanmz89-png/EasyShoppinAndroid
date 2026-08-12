@@ -122,8 +122,9 @@ class CheckoutViewModel : ViewModel() {
                 if (response.isSuccessful && response.body() != null) {
                     val body = response.body()!!
                     if (body.success) {
-                        _uiState.update { it.copy(isLoading = false, orderSuccess = body.details) }
-                        onSuccess(body.details)
+                        val order = body.details ?: body.order
+                        _uiState.update { it.copy(isLoading = false, orderSuccess = order) }
+                        onSuccess(order)
                     } else {
                         _uiState.update { it.copy(isLoading = false, errorMessage = body.message) }
                     }

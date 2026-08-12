@@ -90,6 +90,65 @@ interface ApiService {
         @Path("orderId") orderId: String
     ): Response<OrderTrackingResponse>
 
+    @POST("api/orders/{orderId}/cancel")
+    suspend fun cancelOrder(
+        @Header("Authorization") token: String,
+        @Path("orderId") orderId: String,
+        @Body request: CancelOrderRequest
+    ): Response<OrderDetailsResponse>
+
+    @GET("api/orders/{orderId}/invoice")
+    suspend fun getInvoice(
+        @Header("Authorization") token: String,
+        @Path("orderId") orderId: String
+    ): Response<InvoiceResponse>
+
+    @GET("api/invoices/{orderId}/download")
+    suspend fun downloadInvoice(
+        @Header("Authorization") token: String,
+        @Path("orderId") orderId: String
+    ): Response<InvoiceResponse>
+
+    @POST("api/orders/{orderId}/return")
+    suspend fun initiateReturn(
+        @Header("Authorization") token: String,
+        @Path("orderId") orderId: String,
+        @Body request: InitiateReturnRequest
+    ): Response<ReturnResponse>
+
+    @GET("api/orders/{orderId}/return")
+    suspend fun getReturnStatus(
+        @Header("Authorization") token: String,
+        @Path("orderId") orderId: String
+    ): Response<ReturnResponse>
+
+    @POST("api/orders/{orderId}/items/{itemId}/rate")
+    suspend fun rateItem(
+        @Header("Authorization") token: String,
+        @Path("orderId") orderId: String,
+        @Path("itemId") itemId: String,
+        @Body request: RateItemRequest
+    ): Response<ReviewResponse>
+
+    @GET("api/orders/{orderId}/items/{itemId}/reviews")
+    suspend fun getItemReviews(
+        @Header("Authorization") token: String,
+        @Path("orderId") orderId: String,
+        @Path("itemId") itemId: String
+    ): Response<ReviewResponse>
+
+    @POST("api/orders/{orderId}/reorder")
+    suspend fun reorder(
+        @Header("Authorization") token: String,
+        @Path("orderId") orderId: String,
+        @Body request: ReorderRequest
+    ): Response<ReorderResponse>
+
+    @GET("api/orders/stats")
+    suspend fun getOrderStats(
+        @Header("Authorization") token: String
+    ): Response<OrderStatsResponse>
+
     @POST("api/auth/logout")
     suspend fun logout(
         @Header("Authorization") token: String,

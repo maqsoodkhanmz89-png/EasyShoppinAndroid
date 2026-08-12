@@ -22,6 +22,9 @@ import com.mahad.easyshopping.ui.checkout.CheckoutScreen
 import com.mahad.easyshopping.ui.order.OrderSuccessScreen
 import com.mahad.easyshopping.data.model.Address
 import com.mahad.easyshopping.data.model.Order
+import com.mahad.easyshopping.ui.order.OrderHistoryScreen
+import com.mahad.easyshopping.ui.order.OrderDetailsScreen
+import com.mahad.easyshopping.ui.order.ReviewScreen
 import com.mahad.easyshopping.ui.theme.EasyShoppingTheme
 
 class MainActivity : ComponentActivity() {
@@ -81,6 +84,9 @@ class MainActivity : ComponentActivity() {
                             },
                             onAddressClick = {
                                 navController.navigate("address_list")
+                            },
+                            onOrdersClick = {
+                                navController.navigate("order_history")
                             },
                             cartViewModel = cartViewModel
                         )
@@ -151,10 +157,41 @@ class MainActivity : ComponentActivity() {
                                     }
                                 },
                                 onViewOrderDetailsClick = { orderId ->
-                                    // Navigate to order details if implemented
+                                    navController.navigate("order_details/$orderId")
                                 }
                             )
                         }
+                    }
+                    composable("order_history") {
+                        OrderHistoryScreen(
+                            onBackClick = { navController.popBackStack() },
+                            onOrderClick = { orderId ->
+                                navController.navigate("order_details/$orderId")
+                            }
+                        )
+                    }
+                    composable("order_details/{orderId}") { backStackEntry ->
+                        val orderId = backStackEntry.arguments?.getString("orderId") ?: ""
+                        OrderDetailsScreen(
+                            orderId = orderId,
+                            onBackClick = { navController.popBackStack() },
+                            onRateItemClick = { oId, itemId ->
+                                navController.navigate("rate_item/$oId/$itemId")
+                            },
+                            onReorderSuccess = {
+                                navController.navigate("cart")
+                            }
+                        )
+                    }
+                    composable("rate_item/{orderId}/{itemId}") { backStackEntry ->
+                        val orderId = backStackEntry.arguments?.getString("orderId") ?: ""
+                        val itemId = backStackEntry.arguments?.getString("itemId") ?: ""
+                        ReviewScreen(
+                            orderId = orderId,
+                            itemId = itemId,
+                            onBackClick = { navController.popBackStack() },
+                            onSuccess = { navController.popBackStack() }
+                        )
                     }
                 }
             }

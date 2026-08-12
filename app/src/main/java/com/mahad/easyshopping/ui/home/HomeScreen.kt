@@ -47,6 +47,7 @@ fun HomeScreen(
     onCartClick: () -> Unit,
     onLoginClick: () -> Unit,
     onAddressClick: () -> Unit,
+    onOrdersClick: () -> Unit,
     viewModel: HomeViewModel = viewModel(),
     cartViewModel: CartViewModel = viewModel()
 ) {
@@ -161,6 +162,7 @@ fun HomeScreen(
                     AccountScreen(
                         onLoginClick = onLoginClick,
                         onAddressClick = onAddressClick,
+                        onOrdersClick = onOrdersClick,
                         onLogoutSuccess = { selectedTab = HomeTab.Home },
                         homeViewModel = viewModel,
                         cartViewModel = cartViewModel
@@ -200,7 +202,7 @@ fun HomeScreen(
 @Composable
 fun AccountScreenPreview() {
     MaterialTheme {
-        AccountScreen(onLoginClick = {}, onAddressClick = {}, onLogoutSuccess = {})
+        AccountScreen(onLoginClick = {}, onAddressClick = {}, onOrdersClick = {}, onLogoutSuccess = {})
     }
 }
 
@@ -208,7 +210,13 @@ fun AccountScreenPreview() {
 @Composable
 fun HomeScreenPreview() {
     MaterialTheme {
-        HomeScreen(onCartClick = {}, onProductClick = {}, onLoginClick = {}, onAddressClick = {})
+        HomeScreen(
+            onCartClick = {}, 
+            onProductClick = {}, 
+            onLoginClick = {}, 
+            onAddressClick = {},
+            onOrdersClick = {}
+        )
     }
 }
 
@@ -216,6 +224,7 @@ fun HomeScreenPreview() {
 fun AccountScreen(
     onLoginClick: () -> Unit, 
     onAddressClick: () -> Unit,
+    onOrdersClick: () -> Unit,
     onLogoutSuccess: () -> Unit,
     homeViewModel: HomeViewModel = viewModel(),
     cartViewModel: CartViewModel = viewModel()
@@ -311,6 +320,7 @@ fun AccountScreen(
                     .padding(horizontal = 8.dp)
                     .clickable {
                         when (item.first) {
+                            "My Orders" -> onOrdersClick()
                             "Shipping Address" -> onAddressClick()
                             "Logout" -> {
                                 showLogoutDialog = true
