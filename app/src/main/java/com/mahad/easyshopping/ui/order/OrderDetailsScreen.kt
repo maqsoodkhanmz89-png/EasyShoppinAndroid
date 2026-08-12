@@ -233,7 +233,7 @@ fun OrderItemRow(item: OrderItem, showRateButton: Boolean, onRateClick: () -> Un
         Spacer(modifier = Modifier.width(16.dp))
         Column(modifier = Modifier.weight(1f)) {
             Text(text = item.productTitle ?: item.name, style = MaterialTheme.typography.bodyLarge, fontWeight = FontWeight.SemiBold, maxLines = 1)
-            Text(text = "Qty: ${item.quantity} • $${String.format(Locale.getDefault(), "%.2f", item.price)}", style = MaterialTheme.typography.bodyMedium, color = Color.Gray)
+            Text(text = "Qty: ${item.quantity} • ₹${String.format(Locale.US, "%,.2f", item.price)}", style = MaterialTheme.typography.bodyMedium, color = Color.Gray)
         }
         if (showRateButton) {
             TextButton(onClick = onRateClick) {
@@ -277,7 +277,7 @@ fun PricingSummary(order: Order) {
         HorizontalDivider(modifier = Modifier.padding(vertical = 4.dp))
         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
             Text("Total", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
-            Text("$${String.format(Locale.getDefault(), "%.2f", order.total)}", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary)
+            Text("₹${String.format(Locale.US, "%,.2f", order.total)}", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary)
         }
     }
 }
@@ -286,6 +286,6 @@ fun PricingSummary(order: Order) {
 fun PricingRow(label: String, amount: Double, color: Color = Color.Unspecified) {
     Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
         Text(label, style = MaterialTheme.typography.bodyMedium, color = Color.Gray)
-        Text("${if (amount < 0) "-" else ""}$${String.format(Locale.getDefault(), "%.2f", kotlin.math.abs(amount))}", style = MaterialTheme.typography.bodyMedium, color = color)
+        Text("${if (amount < 0) "-" else ""}₹${String.format(Locale.US, "%,.2f", kotlin.math.abs(amount))}", style = MaterialTheme.typography.bodyMedium, color = color)
     }
 }

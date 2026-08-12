@@ -23,6 +23,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import com.mahad.easyshopping.data.SessionManager
 import com.mahad.easyshopping.ui.cart.CartViewModel
+import java.util.Locale
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -155,7 +156,7 @@ fun ProductDetailsScreen(
                         }
                         
                         Text(
-                            text = "$${product.price}",
+                            text = "₹${String.format(Locale.US, "%,.2f", product.price)}",
                             style = MaterialTheme.typography.headlineSmall,
                             color = MaterialTheme.colorScheme.primary,
                             fontWeight = FontWeight.Bold

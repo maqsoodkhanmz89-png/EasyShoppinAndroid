@@ -33,6 +33,7 @@ import com.mahad.easyshopping.data.model.Product
 import com.mahad.easyshopping.ui.cart.CartViewModel
 import com.mahad.easyshopping.ui.order.OrderHistoryContent
 import com.mahad.easyshopping.ui.order.OrderViewModel
+import java.util.Locale
 
 sealed class HomeTab(val title: String, val icon: ImageVector) {
     object Home : HomeTab("Home", Icons.Filled.Home)
@@ -467,7 +468,7 @@ fun ProductCard(
                 )
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(
-                    text = "$${product.price}",
+                    text = "₹${String.format(Locale.US, "%,.2f", product.price)}",
                     style = MaterialTheme.typography.bodyLarge,
                     color = MaterialTheme.colorScheme.primary,
                     fontWeight = FontWeight.SemiBold

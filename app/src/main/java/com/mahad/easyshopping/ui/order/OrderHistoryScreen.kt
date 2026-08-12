@@ -139,7 +139,7 @@ fun OrderItemCard(order: Order, onClick: () -> Unit) {
                 )
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(
-                    text = "${order.items.size} Items • $${String.format(Locale.getDefault(), "%.2f", order.total)}",
+                    text = "${order.items.size} Items • ₹${String.format(Locale.US, "%,.2f", order.total)}",
                     style = MaterialTheme.typography.bodyMedium,
                     color = Color.Gray
                 )

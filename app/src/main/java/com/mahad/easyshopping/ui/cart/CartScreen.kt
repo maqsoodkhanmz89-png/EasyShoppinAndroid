@@ -109,7 +109,7 @@ fun CartItemRow(
                     overflow = TextOverflow.Ellipsis
                 )
                 Text(
-                    text = "$${item.price}",
+                    text = "₹${String.format(Locale.US, "%,.2f", item.price)}",
                     style = MaterialTheme.typography.bodyLarge,
                     color = MaterialTheme.colorScheme.primary,
                     fontWeight = FontWeight.Bold
@@ -159,7 +159,7 @@ fun CartSummary(subtotal: Double, onCheckoutClick: () -> Unit) {
             ) {
                 Text("Subtotal", style = MaterialTheme.typography.titleLarge)
                 Text(
-                    "$${String.format(Locale.getDefault(), "%.2f", subtotal)}",
+                    "₹${String.format(Locale.US, "%,.2f", subtotal)}",
                     style = MaterialTheme.typography.titleLarge,
                     color = MaterialTheme.colorScheme.primary,
                     fontWeight = FontWeight.Bold

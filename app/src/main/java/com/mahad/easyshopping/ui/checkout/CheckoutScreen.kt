@@ -310,5 +310,5 @@ fun SummaryRow(label: String, amount: Double) {
 }
 
 fun formatCurrency(amount: Double): String {
-    return "$${String.format(Locale.getDefault(), "%.2f", amount)}"
+    return "₹${String.format(Locale.US, "%,.2f", amount)}"
 }
