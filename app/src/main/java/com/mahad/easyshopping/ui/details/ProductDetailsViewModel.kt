@@ -19,8 +19,9 @@ class ProductDetailsViewModel : ViewModel() {
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true) }
             try {
-                // In a real app, we would have a getProductById API
-                // For now, we fetch all and find the matching one to simulate
+                // The single product endpoint /api/products/:id is returning 404 on the server.
+                // Since the list endpoint already contains full product data including images,
+                // we use it and filter by ID to ensure the product is found.
                 val response = RetrofitClient.apiService.getProducts()
                 if (response.isSuccessful) {
                     val product = response.body()?.products?.find { it.id == productId }
@@ -29,6 +30,8 @@ class ProductDetailsViewModel : ViewModel() {
                     } else {
                         _uiState.update { it.copy(isLoading = false, errorMessage = "Product not found") }
                     }
+                } else {
+                    _uiState.update { it.copy(isLoading = false, errorMessage = "Error: ${response.message()}") }
                 }
             } catch (e: Exception) {
                 _uiState.update { it.copy(isLoading = false, errorMessage = e.message) }

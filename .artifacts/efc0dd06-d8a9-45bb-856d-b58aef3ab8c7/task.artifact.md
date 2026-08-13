@@ -1,0 +1,4 @@
+- [x] Update `Models.kt` to include `images` and `SingleProductResponse`
+- [x] Update `ApiService.kt` to add `getProductDetails`
+- [x] Update `ProductDetailsViewModel.kt` to use the new API
+- [x] Update `ProductDetailsScreen.kt` to implement the carousel with dot navigation

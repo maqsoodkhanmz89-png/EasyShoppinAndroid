@@ -46,6 +46,7 @@ data class Product(
     val description: String,
     val price: Double,
     val image: String,
+    val images: List<String>? = null,
     val category: String,
     val rating: Rating,
     val isNew: Boolean

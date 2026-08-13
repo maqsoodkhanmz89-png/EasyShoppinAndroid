@@ -1,7 +1,11 @@
 package com.mahad.easyshopping.ui.details
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -13,8 +17,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
@@ -111,6 +117,16 @@ fun ProductDetailsScreen(
                 )
             } else {
                 uiState.product?.let { product ->
+                    val imageUrls = remember(product) {
+                        val base = "http://192.168.0.106:3000"
+                        if (!product.images.isNullOrEmpty()) {
+                            product.images.map { if (it.startsWith("http")) it else "$base${if (it.startsWith("/")) "" else "/"}$it" }
+                        } else {
+                            listOf(if (product.image.startsWith("http")) product.image else "$base${if (product.image.startsWith("/")) "" else "/"}${product.image}")
+                        }
+                    }
+                    val pagerState = rememberPagerState(pageCount = { imageUrls.size })
+
                     Column(
                         modifier = Modifier
                             .fillMaxSize()
@@ -125,14 +141,41 @@ fun ProductDetailsScreen(
                             colors = CardDefaults.cardColors(containerColor = Color.White),
                             elevation = CardDefaults.cardElevation(2.dp)
                         ) {
-                            AsyncImage(
-                                model = product.image,
-                                contentDescription = product.name,
-                                modifier = Modifier
-                                    .fillMaxSize()
-                                    .padding(16.dp),
-                                contentScale = ContentScale.Fit
-                            )
+                            Box(modifier = Modifier.fillMaxSize()) {
+                                HorizontalPager(
+                                    state = pagerState,
+                                    modifier = Modifier.fillMaxSize()
+                                ) { page ->
+                                    AsyncImage(
+                                        model = imageUrls[page],
+                                        contentDescription = product.name,
+                                        modifier = Modifier
+                                            .fillMaxSize()
+                                            .padding(16.dp),
+                                        contentScale = ContentScale.Fit
+                                    )
+                                }
+                                
+                                if (imageUrls.size > 1) {
+                                    Row(
+                                        modifier = Modifier
+                                            .align(Alignment.BottomCenter)
+                                            .padding(bottom = 16.dp),
+                                        horizontalArrangement = Arrangement.Center
+                                    ) {
+                                        repeat(imageUrls.size) { iteration ->
+                                            val color = if (pagerState.currentPage == iteration) MaterialTheme.colorScheme.primary else Color.LightGray.copy(alpha = 0.5f)
+                                            Box(
+                                                modifier = Modifier
+                                                    .padding(4.dp)
+                                                    .size(8.dp)
+                                                    .clip(CircleShape)
+                                                    .background(color)
+                                            )
+                                        }
+                                    }
+                                }
+                            }
                         }
                         
                         Spacer(modifier = Modifier.height(24.dp))
