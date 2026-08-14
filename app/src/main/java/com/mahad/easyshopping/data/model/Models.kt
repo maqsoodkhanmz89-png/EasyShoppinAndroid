@@ -6,7 +6,8 @@ import kotlinx.parcelize.Parcelize
 data class RegisterRequest(
     val userName: String,
     val email: String,
-    val password: String
+    val password: String,
+    val phone: String
 )
 
 data class LoginRequest(
@@ -18,7 +19,8 @@ data class LoginResponse(
     val token: String? = null,
     val message: String? = null,
     val userName: String? = null,
-    val email: String? = null
+    val email: String? = null,
+    val phone: String? = null
 )
 
 data class ForgotPasswordRequest(
@@ -107,13 +109,16 @@ data class Address(
 ) : Parcelable
 
 data class AddressRequest(
+    val fullName: String,
     val type: String,
     val addressLine1: String,
     val addressLine2: String? = null,
+    val street: String,
     val city: String,
     val state: String,
     val country: String,
     val zipCode: String,
+    val phone: String,
     val phoneNumber: String,
     val isDefault: Boolean
 )

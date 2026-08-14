@@ -1,4 +1,6 @@
-- [x] Update `Models.kt` to include `images` and `SingleProductResponse`
-- [x] Update `ApiService.kt` to add `getProductDetails`
-- [x] Update `ProductDetailsViewModel.kt` to use the new API
-- [x] Update `ProductDetailsScreen.kt` to implement the carousel with dot navigation
+- [x] Update `RegisterRequest` in `Models.kt`
+- [x] Update `CreateAccountViewModel.kt` with new fields and validation
+- [x] Update `CreateAccountScreen.kt` UI
+- [x] Update `AddEditAddressScreen.kt` label and mandatory check
+- [x] Update `SessionManager.kt` and `LoginViewModel.kt` to handle phone number
+- [x] Update `ProfileHeader` to display phone number

@@ -140,6 +140,9 @@ fun AddressCard(
             
             Spacer(modifier = Modifier.height(8.dp))
             
+            if (!address.fullName.isNullOrBlank()) {
+                Text(text = address.fullName, style = MaterialTheme.typography.bodyLarge, fontWeight = FontWeight.Bold)
+            }
             Text(text = address.addressLine1, style = MaterialTheme.typography.bodyLarge)
             if (!address.addressLine2.isNullOrBlank()) {
                 Text(text = address.addressLine2, style = MaterialTheme.typography.bodyMedium)
@@ -161,7 +164,7 @@ fun AddressCard(
                 )
                 Spacer(modifier = Modifier.width(4.dp))
                 Text(
-                    text = address.phoneNumber,
+                    text = address.phone ?: address.phoneNumber,
                     style = MaterialTheme.typography.bodySmall,
                     color = Color.Gray
                 )

@@ -333,7 +333,8 @@ fun AccountScreen(
         item {
             ProfileHeader(
                 userName = SessionManager.userName ?: "User",
-                email = SessionManager.userEmail ?: ""
+                email = SessionManager.userEmail ?: "",
+                phone = SessionManager.userPhone
             )
         }
         items(menuItems) { item ->
@@ -379,7 +380,7 @@ fun AccountScreen(
 }
 
 @Composable
-fun ProfileHeader(userName: String, email: String) {
+fun ProfileHeader(userName: String, email: String, phone: String?) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -411,6 +412,13 @@ fun ProfileHeader(userName: String, email: String) {
             style = MaterialTheme.typography.bodyMedium,
             color = Color.Gray
         )
+        if (!phone.isNullOrBlank()) {
+            Text(
+                text = phone,
+                style = MaterialTheme.typography.bodyMedium,
+                color = Color.Gray
+            )
+        }
     }
 }
 

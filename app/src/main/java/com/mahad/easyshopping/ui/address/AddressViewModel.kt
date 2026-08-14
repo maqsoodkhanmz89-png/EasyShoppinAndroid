@@ -53,7 +53,8 @@ class AddressViewModel : ViewModel() {
                     onSuccess()
                     fetchAddresses()
                 } else {
-                    _uiState.update { it.copy(isLoading = false, errorMessage = "Failed to add address") }
+                    val errorMsg = response.errorBody()?.string() ?: "Failed to add address"
+                    _uiState.update { it.copy(isLoading = false, errorMessage = errorMsg) }
                 }
             } catch (e: Exception) {
                 _uiState.update { it.copy(isLoading = false, errorMessage = e.message) }
@@ -71,7 +72,8 @@ class AddressViewModel : ViewModel() {
                     onSuccess()
                     fetchAddresses()
                 } else {
-                    _uiState.update { it.copy(isLoading = false, errorMessage = "Failed to update address") }
+                    val errorMsg = response.errorBody()?.string() ?: "Failed to update address"
+                    _uiState.update { it.copy(isLoading = false, errorMessage = errorMsg) }
                 }
             } catch (e: Exception) {
                 _uiState.update { it.copy(isLoading = false, errorMessage = e.message) }

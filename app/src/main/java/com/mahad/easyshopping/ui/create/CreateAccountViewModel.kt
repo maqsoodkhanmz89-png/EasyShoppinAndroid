@@ -27,20 +27,37 @@ class CreateAccountViewModel : ViewModel() {
         _uiState.update { it.copy(password = password) }
     }
 
+    fun onMobileNumberChanged(mobileNumber: String) {
+        _uiState.update { it.copy(mobileNumber = mobileNumber) }
+    }
+
+    fun onConfirmPasswordChanged(confirmPassword: String) {
+        _uiState.update { it.copy(confirmPassword = confirmPassword) }
+    }
+
     fun onRegisterClicked() {
         val name = _uiState.value.name
         val email = _uiState.value.email
+        val mobileNumber = _uiState.value.mobileNumber
         val password = _uiState.value.password
+        val confirmPassword = _uiState.value.confirmPassword
 
-        if (name.isBlank() || email.isBlank() || password.isBlank()) {
+        if (name.isBlank() || email.isBlank() || mobileNumber.isBlank() || password.isBlank() || confirmPassword.isBlank()) {
             _uiState.update { it.copy(errorMessage = "All fields are required") }
+            return
+        }
+
+        if (password != confirmPassword) {
+            _uiState.update { it.copy(errorMessage = "Passwords do not match") }
             return
         }
 
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true, errorMessage = null) }
             try {
-                val response = RetrofitClient.apiService.register(RegisterRequest(name, email, password))
+                val response = RetrofitClient.apiService.register(
+                    RegisterRequest(name, email, password, mobileNumber)
+                )
                 if (response.isSuccessful) {
                     _uiState.update { it.copy(isLoading = false, isSuccess = true) }
                 } else {
@@ -61,7 +78,9 @@ class CreateAccountViewModel : ViewModel() {
 data class CreateAccountUiState(
     val name: String = "",
     val email: String = "",
+    val mobileNumber: String = "",
     val password: String = "",
+    val confirmPassword: String = "",
     val isLoading: Boolean = false,
     val isSuccess: Boolean = false,
     val errorMessage: String? = null

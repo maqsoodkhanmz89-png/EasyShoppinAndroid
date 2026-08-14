@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.selection.selectableGroup
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -12,6 +13,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.mahad.easyshopping.data.model.Address
@@ -26,13 +28,14 @@ fun AddEditAddressScreen(
     viewModel: AddressViewModel = viewModel()
 ) {
     var type by remember { mutableStateOf(address?.type ?: "home") }
+    var fullName by remember { mutableStateOf(address?.fullName ?: "") }
     var addressLine1 by remember { mutableStateOf(address?.addressLine1 ?: "") }
     var addressLine2 by remember { mutableStateOf(address?.addressLine2 ?: "") }
     var city by remember { mutableStateOf(address?.city ?: "") }
     var state by remember { mutableStateOf(address?.state ?: "") }
     var country by remember { mutableStateOf(address?.country ?: "") }
     var zipCode by remember { mutableStateOf(address?.zipCode ?: "") }
-    var phoneNumber by remember { mutableStateOf(address?.phoneNumber ?: "") }
+    var phoneNumber by remember { mutableStateOf(address?.phone ?: address?.phoneNumber ?: "") }
     var isDefault by remember { mutableStateOf(address?.isDefault ?: false) }
 
     val uiState by viewModel.uiState.collectAsState()
@@ -59,6 +62,14 @@ fun AddEditAddressScreen(
         ) {
             Text("Address Type", style = MaterialTheme.typography.titleMedium)
             AddressTypeSelector(selectedType = type, onTypeSelected = { type = it })
+
+            OutlinedTextField(
+                value = fullName,
+                onValueChange = { fullName = it },
+                label = { Text("Full Name") },
+                modifier = Modifier.fillMaxWidth(),
+                singleLine = true
+            )
 
             OutlinedTextField(
                 value = addressLine1,
@@ -113,9 +124,10 @@ fun AddEditAddressScreen(
             OutlinedTextField(
                 value = phoneNumber,
                 onValueChange = { phoneNumber = it },
-                label = { Text("Phone Number") },
+                label = { Text("Mobile Number") },
                 modifier = Modifier.fillMaxWidth(),
-                singleLine = true
+                singleLine = true,
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone)
             )
 
             Row(
@@ -133,13 +145,16 @@ fun AddEditAddressScreen(
             Button(
                 onClick = {
                     val request = AddressRequest(
+                        fullName = fullName,
                         type = type,
                         addressLine1 = addressLine1,
                         addressLine2 = addressLine2,
+                        street = addressLine1,
                         city = city,
                         state = state,
                         country = country,
                         zipCode = zipCode,
+                        phone = phoneNumber,
                         phoneNumber = phoneNumber,
                         isDefault = isDefault
                     )
@@ -151,8 +166,9 @@ fun AddEditAddressScreen(
                 },
                 modifier = Modifier.fillMaxWidth().height(56.dp),
                 shape = MaterialTheme.shapes.medium,
-                enabled = !uiState.isLoading && addressLine1.isNotBlank() && city.isNotBlank() && state.isNotBlank() && country.isNotBlank() && zipCode.isNotBlank() && phoneNumber.isNotBlank()
-            ) {
+                enabled = !uiState.isLoading && fullName.isNotBlank() && addressLine1.isNotBlank() && city.isNotBlank() && state.isNotBlank() && country.isNotBlank() && zipCode.isNotBlank() && phoneNumber.isNotBlank()
+            )
+{
                 if (uiState.isLoading) {
                     CircularProgressIndicator(color = MaterialTheme.colorScheme.onPrimary, modifier = Modifier.size(24.dp))
                 } else {

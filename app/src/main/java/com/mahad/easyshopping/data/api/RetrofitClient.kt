@@ -9,7 +9,7 @@ object RetrofitClient {
     private const val BASE_URL = "http://192.168.0.106:3000/"
 
     private val logging = HttpLoggingInterceptor().apply {
-        level = HttpLoggingInterceptor.Level.HEADERS
+        level = HttpLoggingInterceptor.Level.BODY
     }
 
     private val client = OkHttpClient.Builder()

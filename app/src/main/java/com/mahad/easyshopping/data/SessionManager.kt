@@ -8,6 +8,7 @@ object SessionManager {
     private const val KEY_TOKEN = "auth_token"
     private const val KEY_USER_NAME = "user_name"
     private const val KEY_USER_EMAIL = "user_email"
+    private const val KEY_USER_PHONE = "user_phone"
     private lateinit var prefs: SharedPreferences
 
     fun init(context: Context) {
@@ -30,6 +31,12 @@ object SessionManager {
         get() = prefs.getString(KEY_USER_EMAIL, null)
         set(value) {
             prefs.edit().putString(KEY_USER_EMAIL, value).apply()
+        }
+
+    var userPhone: String?
+        get() = prefs.getString(KEY_USER_PHONE, null)
+        set(value) {
+            prefs.edit().putString(KEY_USER_PHONE, value).apply()
         }
     
     val isLoggedIn: Boolean

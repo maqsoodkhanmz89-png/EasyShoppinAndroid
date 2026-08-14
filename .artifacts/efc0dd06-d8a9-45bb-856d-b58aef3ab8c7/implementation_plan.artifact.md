@@ -1,36 +1,47 @@
-# Support for Multiple Product Images with Carousel Navigation
+# Implementation Plan - Add Mobile Number and Password Validation
 
-Integrate backend support for multiple product images in the Product Details screen using a carousel with dot navigation, matching the official app's look and feel.
+This plan outlines the changes required to add a mandatory "Mobile Number" field to the Registration and Address sections, and to implement password matching validation during registration.
 
 ## Proposed Changes
 
-### Data Model & API
-
+### Data Models
 #### [MODIFY] [Models.kt](file:///C:/Users/MKhanMohammedZai/Downloads/Project/Android/EasyShoppinAndroid/EasyShoppinAndroid/app/src/main/java/com/mahad/easyshopping/data/model/Models.kt)
-- Update `Product` data class to include `images: List<String>`.
-- Add `SingleProductResponse` to handle fetching a single product's details.
+- Update `RegisterRequest` to include `phoneNumber: String`.
 
-#### [MODIFY] [ApiService.kt](file:///C:/Users/MKhanMohammedZai/Downloads/Project/Android/EasyShoppinAndroid/EasyShoppinAndroid/app/src/main/java/com/mahad/easyshopping/data/api/ApiService.kt)
-- Add `getProductDetails(@Path("id") id: Int): Response<SingleProductResponse>` endpoint.
+### Registration Feature
+#### [MODIFY] [CreateAccountViewModel.kt](file:///C:/Users/MKhanMohammedZai/Downloads/Project/Android/EasyShoppinAndroid/EasyShoppinAndroid/app/src/main/java/com/mahad/easyshopping/ui/create/CreateAccountViewModel.kt)
+- Add `mobileNumber` and `confirmPassword` to `CreateAccountUiState`.
+- Add state update functions for the new fields.
+- Update `onRegisterClicked` to:
+    - Validate that Name, Email, Mobile Number, Password, and Confirm Password are not blank.
+    - Verify that `password` and `confirmPassword` match.
+    - Include `mobileNumber` in the `RegisterRequest`.
 
-#### [MODIFY] [ProductDetailsViewModel.kt](file:///C:/Users/MKhanMohammedZai/Downloads/Project/Android/EasyShoppinAndroid/EasyShoppinAndroid/app/src/main/java/com/mahad/easyshopping/ui/details/ProductDetailsViewModel.kt)
-- Update `fetchProductDetails` to use the new `getProductDetails` API instead of filtering the list of all products.
+#### [MODIFY] [CreateAccountScreen.kt](file:///C:/Users/MKhanMohammedZai/Downloads/Project/Android/EasyShoppinAndroid/EasyShoppinAndroid/app/src/main/java/com/mahad/easyshopping/ui/create/CreateAccountScreen.kt)
+- Add a new `OutlinedTextField` for "Mobile Number".
+- Update the existing "Password" field label to "Create Password".
+- Add a new `OutlinedTextField` for "Confirm Password".
+- Ensure all new fields are wired to the ViewModel.
 
-### User Interface
-
-#### [MODIFY] [ProductDetailsScreen.kt](file:///C:/Users/MKhanMohammedZai/Downloads/Project/Android/EasyShoppinAndroid/EasyShoppinAndroid/app/src/main/java/com/mahad/easyshopping/ui/details/ProductDetailsScreen.kt)
-- Replace the single `AsyncImage` in the product details with a `HorizontalPager`.
-- Implement a dot indicator (pager indicator) for image navigation.
-- Ensure image URLs are correctly handled (prepended with `BASE_URL` if they are relative paths).
+### Address Feature
+#### [MODIFY] [AddEditAddressScreen.kt](file:///C:/Users/MKhanMohammedZai/Downloads/Project/Android/EasyShoppinAndroid/EasyShoppinAndroid/app/src/main/java/com/mahad/easyshopping/ui/address/AddEditAddressScreen.kt)
+- Update the label for `phoneNumber` field to "Mobile Number" for clarity.
+- Ensure the field is mandatory (already partially implemented in the "Save Address" button enable logic).
 
 ## Verification Plan
 
 ### Automated Tests
-- Build the project to ensure data model changes don't break existing features.
+- N/A (Manual verification on device is preferred for UI/Flow changes).
 
 ### Manual Verification
-- Deploy to the device.
-- Navigate to a product with multiple images (e.g., ID 11 "New Fortuner").
-- Verify that the image carousel displays all images.
-- Verify that the dot navigation updates correctly as images are swiped.
-- Verify that products with a single image still display correctly.
+1. **Registration Flow**:
+    - Open the Registration screen.
+    - Verify that "Full Name", "Email Address", "Mobile Number", "Create Password", and "Confirm Password" fields are visible.
+    - Try to register with blank fields and verify the error message.
+    - Try to register with mismatched passwords and verify the error message.
+    - Complete registration with valid, matching data and verify success.
+2. **Address Management**:
+    - Open the "Add New Address" screen.
+    - Verify the "Mobile Number" field is present.
+    - Verify that the address cannot be saved if the mobile number is blank.
+    - Add/Update an address and verify the mobile number is persisted.

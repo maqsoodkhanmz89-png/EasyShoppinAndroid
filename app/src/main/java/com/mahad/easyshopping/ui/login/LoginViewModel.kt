@@ -43,6 +43,7 @@ class LoginViewModel : ViewModel() {
                     SessionManager.token = body?.token
                     SessionManager.userName = body?.userName
                     SessionManager.userEmail = body?.email ?: email
+                    SessionManager.userPhone = body?.phone
                     _uiState.update { it.copy(isLoading = false, isLoggedIn = true) }
                 } else {
                     val errorBody = response.errorBody()?.string() ?: ""
@@ -94,6 +95,7 @@ class LoginViewModel : ViewModel() {
                         SessionManager.token = body?.token
                         SessionManager.userName = body?.userName ?: request.userName
                         SessionManager.userEmail = body?.email ?: request.email
+                        SessionManager.userPhone = body?.phone
                         _uiState.update { it.copy(isLoading = false, isLoggedIn = true) }
                     } else {
                         val errorBody = response.errorBody()?.string() ?: ""
