@@ -25,6 +25,7 @@ import com.mahad.easyshopping.data.model.Order
 import com.mahad.easyshopping.ui.order.OrderHistoryScreen
 import com.mahad.easyshopping.ui.order.OrderDetailsScreen
 import com.mahad.easyshopping.ui.order.ReviewScreen
+import com.mahad.easyshopping.ui.address.AddressViewModel
 import com.mahad.easyshopping.ui.theme.EasyShoppingTheme
 
 class MainActivity : ComponentActivity() {
@@ -36,6 +37,7 @@ class MainActivity : ComponentActivity() {
             EasyShoppingTheme {
                 val navController = rememberNavController()
                 val cartViewModel: CartViewModel = viewModel()
+                val addressViewModel: AddressViewModel = viewModel()
                 
                 NavHost(navController = navController, startDestination = "home") {
                     composable("login") {
@@ -124,7 +126,8 @@ class MainActivity : ComponentActivity() {
                             onEditAddressClick = { address ->
                                 navController.currentBackStackEntry?.savedStateHandle?.set("address", address)
                                 navController.navigate("add_edit_address")
-                            }
+                            },
+                            viewModel = addressViewModel
                         )
                     }
                     composable("add_edit_address") {
@@ -132,7 +135,8 @@ class MainActivity : ComponentActivity() {
                         AddEditAddressScreen(
                             address = address,
                             onBackClick = { navController.popBackStack() },
-                            onSuccess = { navController.popBackStack() }
+                            onSuccess = { navController.popBackStack() },
+                            viewModel = addressViewModel
                         )
                     }
                     composable("checkout") {

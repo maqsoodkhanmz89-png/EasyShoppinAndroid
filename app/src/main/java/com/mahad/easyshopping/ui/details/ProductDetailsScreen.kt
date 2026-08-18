@@ -118,7 +118,7 @@ fun ProductDetailsScreen(
             } else {
                 uiState.product?.let { product ->
                     val imageUrls = remember(product) {
-                        val base = "http://192.168.0.106:3000"
+                        val base = "https://mskshoping.com"
                         if (!product.images.isNullOrEmpty()) {
                             product.images.map { if (it.startsWith("http")) it else "$base${if (it.startsWith("/")) "" else "/"}$it" }
                         } else {

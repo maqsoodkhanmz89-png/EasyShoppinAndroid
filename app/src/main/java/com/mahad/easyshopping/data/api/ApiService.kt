@@ -14,9 +14,6 @@ interface ApiService {
     @POST("api/auth/forgot-password")
     suspend fun forgotPassword(@Body request: ForgotPasswordRequest): Response<Unit>
 
-    @POST("api/auth/social-login")
-    suspend fun socialLogin(@Body request: SocialLoginRequest): Response<LoginResponse>
-
     @GET("api/dashboard/home/products")
     suspend fun getProducts(): Response<ProductResponse>
 

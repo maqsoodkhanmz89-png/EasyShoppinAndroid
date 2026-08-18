@@ -154,40 +154,6 @@ fun LoginScreen(
                 Text("Forgot password?")
             }
 
-            Spacer(modifier = Modifier.height(24.dp))
-
-            Text(
-                text = "Or sign in with",
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
-
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 16.dp),
-                horizontalArrangement = Arrangement.Center,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                SocialLoginButton(
-                    text = "G",
-                    color = Color(0xFFDB4437), // Google Red
-                    onClick = { viewModel.onSocialLoginClicked("gmail") }
-                )
-                Spacer(modifier = Modifier.width(24.dp))
-                SocialLoginButton(
-                    text = "F",
-                    color = Color(0xFF4267B2), // Facebook Blue
-                    onClick = { viewModel.onSocialLoginClicked("facebook") }
-                )
-                Spacer(modifier = Modifier.width(24.dp))
-                SocialLoginButton(
-                    text = "I",
-                    color = Color(0xFFC13584), // Instagram Pink/Purple
-                    onClick = { viewModel.onSocialLoginClicked("instagram") }
-                )
-            }
-
             uiState.errorMessage?.let {
                 Text(
                     text = it,
@@ -195,30 +161,6 @@ fun LoginScreen(
                     modifier = Modifier.padding(top = 16.dp)
                 )
             }
-        }
-    }
-}
-
-@Composable
-fun SocialLoginButton(
-    text: String,
-    color: Color,
-    onClick: () -> Unit
-) {
-    Surface(
-        onClick = onClick,
-        shape = androidx.compose.foundation.shape.CircleShape,
-        color = color,
-        modifier = Modifier.size(48.dp),
-        shadowElevation = 2.dp
-    ) {
-        Box(contentAlignment = Alignment.Center) {
-            Text(
-                text = text,
-                color = Color.White,
-                fontWeight = FontWeight.Bold,
-                style = MaterialTheme.typography.titleLarge
-            )
         }
     }
 }

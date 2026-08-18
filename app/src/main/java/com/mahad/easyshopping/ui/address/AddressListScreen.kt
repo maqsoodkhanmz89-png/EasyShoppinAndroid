@@ -28,6 +28,10 @@ fun AddressListScreen(
 ) {
     val uiState by viewModel.uiState.collectAsState()
 
+    androidx.compose.runtime.LaunchedEffect(Unit) {
+        viewModel.fetchAddresses()
+    }
+
     Scaffold(
         topBar = {
             TopAppBar(

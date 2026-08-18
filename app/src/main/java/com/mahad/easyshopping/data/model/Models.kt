@@ -28,13 +28,6 @@ data class ForgotPasswordRequest(
     val newPassword: String
 )
 
-data class SocialLoginRequest(
-    val provider: String,
-    val providerUserId: String,
-    val email: String,
-    val userName: String
-)
-
 data class ProductResponse(
     val success: Boolean,
     val message: String,

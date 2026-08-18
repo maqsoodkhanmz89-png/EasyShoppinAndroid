@@ -53,23 +53,27 @@ class HomeViewModel : ViewModel() {
 
     fun logout(onSuccess: () -> Unit) {
         val token = SessionManager.getBearerToken()
-        if (token == null) {
+        
+        // Always clear local data and call success to ensure UI updates,
+        // even if the network call fails or is not needed.
+        val performLocalLogout = {
             SessionManager.logout()
             onSuccess()
+        }
+
+        if (token == null) {
+            performLocalLogout()
             return
         }
 
         viewModelScope.launch {
             try {
-                val response = RetrofitClient.apiService.logout(token, emptyMap())
-                if (response.isSuccessful) {
-                    SessionManager.logout()
-                    onSuccess()
-                } else {
-                    _uiState.update { it.copy(errorMessage = "Logout failed") }
-                }
+                // We attempt to notify the server, but we logout locally regardless of result
+                RetrofitClient.apiService.logout(token, emptyMap())
+                performLocalLogout()
             } catch (e: Exception) {
-                _uiState.update { it.copy(errorMessage = e.message ?: "An error occurred") }
+                // If network fails, we still want to log out the user locally
+                performLocalLogout()
             }
         }
     }

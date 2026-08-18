@@ -5,7 +5,6 @@ import androidx.lifecycle.viewModelScope
 import com.mahad.easyshopping.data.SessionManager
 import com.mahad.easyshopping.data.api.RetrofitClient
 import com.mahad.easyshopping.data.model.LoginRequest
-import com.mahad.easyshopping.data.model.SocialLoginRequest
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -56,59 +55,6 @@ class LoginViewModel : ViewModel() {
                 }
             } catch (e: Exception) {
                 _uiState.update { it.copy(isLoading = false, errorMessage = e.message ?: "An error occurred") }
-            }
-        }
-    }
-
-    fun onSocialLoginClicked(provider: String) {
-        // In a real app, this would trigger the Social SDK (Google, Facebook, etc.)
-        // For this demo, we simulate a successful SDK callback with mock data
-        val mockRequest = when (provider) {
-            "gmail" -> SocialLoginRequest(
-                provider = "gmail",
-                providerUserId = "google-123",
-                email = "google_user@example.com",
-                userName = "Google User"
-            )
-            "facebook" -> SocialLoginRequest(
-                provider = "facebook",
-                providerUserId = "fb-456",
-                email = "fb_user@example.com",
-                userName = "Facebook User"
-            )
-            "instagram" -> SocialLoginRequest(
-                provider = "instagram",
-                providerUserId = "ig-789",
-                email = "ig_user@example.com",
-                userName = "Instagram User"
-            )
-            else -> null
-        }
-
-        mockRequest?.let { request ->
-            viewModelScope.launch {
-                _uiState.update { it.copy(isLoading = true, errorMessage = null) }
-                try {
-                    val response = RetrofitClient.apiService.socialLogin(request)
-                    if (response.isSuccessful) {
-                        val body = response.body()
-                        SessionManager.token = body?.token
-                        SessionManager.userName = body?.userName ?: request.userName
-                        SessionManager.userEmail = body?.email ?: request.email
-                        SessionManager.userPhone = body?.phone
-                        _uiState.update { it.copy(isLoading = false, isLoggedIn = true) }
-                    } else {
-                        val errorBody = response.errorBody()?.string() ?: ""
-                        val displayError = if (errorBody.contains("<!DOCTYPE html>")) {
-                            "404 Not Found: The server at http://192.168.0.103:3000 does not have a route for POST /api/auth/social-login. Please check your backend route definitions."
-                        } else {
-                            errorBody.ifBlank { "Social login failed" }
-                        }
-                        _uiState.update { it.copy(isLoading = false, errorMessage = displayError) }
-                    }
-                } catch (e: Exception) {
-                    _uiState.update { it.copy(isLoading = false, errorMessage = e.message ?: "An error occurred") }
-                }
             }
         }
     }
