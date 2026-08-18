@@ -1,6 +1,7 @@
 package com.mahad.easyshopping.data.model
 
 import android.os.Parcelable
+import com.google.gson.annotations.SerializedName
 import kotlinx.parcelize.Parcelize
 
 data class RegisterRequest(
@@ -84,36 +85,41 @@ data class UpdateCartRequest(
 @Parcelize
 data class Address(
     val id: String,
-    val type: String = "",
-    val addressLine1: String = "",
-    val addressLine2: String? = null,
-    val city: String = "",
-    val state: String = "",
-    val country: String = "",
-    val zipCode: String = "",
-    val phoneNumber: String = "",
-    val isDefault: Boolean = false,
+    @SerializedName("type") val type: String = "",
+    @SerializedName("addressLine1") val addressLine1: String = "",
+    @SerializedName("addressLine2") val addressLine2: String? = null,
+    @SerializedName("city") val city: String = "",
+    @SerializedName("state") val state: String = "",
+    @SerializedName("country") val country: String = "",
+    @SerializedName("zipCode") val zipCode: String = "",
+    @SerializedName("phoneNumber") val phoneNumber: String = "",
+    @SerializedName("isDefault") val isDefault: Boolean = false,
     val createdAt: String? = null,
     val updatedAt: String? = null,
-    // New fields from latest spec
-    val fullName: String? = null,
-    val street: String? = null,
-    val phone: String? = null
+    // Add multiple possible mappings for Name to ensure persistence
+    @SerializedName("fullName") val fullName: String? = null,
+    @SerializedName("full_name") val fullNameSnake: String? = null,
+    @SerializedName("name") val name: String? = null,
+    @SerializedName("street") val street: String? = null,
+    @SerializedName("phone") val phone: String? = null
 ) : Parcelable
 
 data class AddressRequest(
-    val fullName: String,
-    val type: String,
-    val addressLine1: String,
-    val addressLine2: String? = null,
-    val street: String,
-    val city: String,
-    val state: String,
-    val country: String,
-    val zipCode: String,
-    val phone: String,
-    val phoneNumber: String,
-    val isDefault: Boolean
+    @SerializedName("type") val type: String,
+    @SerializedName("addressLine1") val addressLine1: String,
+    @SerializedName("addressLine2") val addressLine2: String? = null,
+    @SerializedName("city") val city: String,
+    @SerializedName("state") val state: String,
+    @SerializedName("country") val country: String,
+    @SerializedName("zipCode") val zipCode: String,
+    @SerializedName("phoneNumber") val phoneNumber: String,
+    @SerializedName("isDefault") val isDefault: Boolean,
+    // Send Name in multiple fields to ensure backend persistence
+    @SerializedName("fullName") val fullName: String,
+    @SerializedName("name") val name: String,
+    @SerializedName("full_name") val fullNameSnake: String,
+    @SerializedName("street") val street: String,
+    @SerializedName("phone") val phone: String
 )
 
 data class AddressListResponse(

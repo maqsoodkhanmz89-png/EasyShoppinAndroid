@@ -17,11 +17,11 @@ class OrderViewModel : ViewModel() {
     val uiState: StateFlow<OrderUiState> = _uiState.asStateFlow()
 
     fun fetchOrders(page: Int = 1) {
-        val token = SessionManager.getBearerToken() ?: return
+        if (!SessionManager.isLoggedIn) return
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true, errorMessage = null) }
             try {
-                val response = RetrofitClient.apiService.getOrders(token, page)
+                val response = RetrofitClient.apiService.getOrders(page)
                 if (response.isSuccessful && response.body() != null) {
                     _uiState.update { 
                         it.copy(
@@ -40,11 +40,11 @@ class OrderViewModel : ViewModel() {
     }
 
     fun fetchOrderDetails(orderId: String) {
-        val token = SessionManager.getBearerToken() ?: return
+        if (!SessionManager.isLoggedIn) return
         viewModelScope.launch {
             _uiState.update { it.copy(isLoadingDetails = true, errorMessage = null) }
             try {
-                val response = RetrofitClient.apiService.getOrderDetails(token, orderId)
+                val response = RetrofitClient.apiService.getOrderDetails(orderId)
                 if (response.isSuccessful && response.body() != null) {
                     _uiState.update { 
                         it.copy(
@@ -63,10 +63,9 @@ class OrderViewModel : ViewModel() {
     }
 
     private fun fetchTracking(orderId: String) {
-        val token = SessionManager.getBearerToken() ?: return
         viewModelScope.launch {
             try {
-                val response = RetrofitClient.apiService.trackOrder(token, orderId)
+                val response = RetrofitClient.apiService.trackOrder(orderId)
                 if (response.isSuccessful && response.body() != null) {
                     _uiState.update { it.copy(trackingHistory = response.body()!!.trackingHistory) }
                 }
@@ -77,11 +76,10 @@ class OrderViewModel : ViewModel() {
     }
 
     fun cancelOrder(orderId: String, reason: String, onSuccess: () -> Unit) {
-        val token = SessionManager.getBearerToken() ?: return
         viewModelScope.launch {
             _uiState.update { it.copy(isLoadingAction = true, errorMessage = null) }
             try {
-                val response = RetrofitClient.apiService.cancelOrder(token, orderId, CancelOrderRequest(reason))
+                val response = RetrofitClient.apiService.cancelOrder(orderId, CancelOrderRequest(reason))
                 if (response.isSuccessful) {
                     _uiState.update { it.copy(isLoadingAction = false) }
                     onSuccess()
@@ -96,11 +94,10 @@ class OrderViewModel : ViewModel() {
     }
 
     fun reorder(orderId: String, onReorderSuccess: () -> Unit) {
-        val token = SessionManager.getBearerToken() ?: return
         viewModelScope.launch {
             _uiState.update { it.copy(isLoadingAction = true) }
             try {
-                val response = RetrofitClient.apiService.reorder(token, orderId, ReorderRequest())
+                val response = RetrofitClient.apiService.reorder(orderId, ReorderRequest())
                 if (response.isSuccessful) {
                     _uiState.update { it.copy(isLoadingAction = false) }
                     onReorderSuccess()
@@ -114,11 +111,10 @@ class OrderViewModel : ViewModel() {
     }
 
     fun rateItem(orderId: String, itemId: String, rating: Int, review: String, onSuccess: () -> Unit) {
-        val token = SessionManager.getBearerToken() ?: return
         viewModelScope.launch {
             _uiState.update { it.copy(isLoadingAction = true) }
             try {
-                val response = RetrofitClient.apiService.rateItem(token, orderId, itemId, RateItemRequest(rating, review))
+                val response = RetrofitClient.apiService.rateItem(orderId, itemId, RateItemRequest(rating, review))
                 if (response.isSuccessful) {
                     _uiState.update { it.copy(isLoadingAction = false) }
                     onSuccess()
@@ -132,10 +128,10 @@ class OrderViewModel : ViewModel() {
     }
 
     fun fetchStats() {
-        val token = SessionManager.getBearerToken() ?: return
+        if (!SessionManager.isLoggedIn) return
         viewModelScope.launch {
             try {
-                val response = RetrofitClient.apiService.getOrderStats(token)
+                val response = RetrofitClient.apiService.getOrderStats()
                 if (response.isSuccessful && response.body() != null) {
                     _uiState.update { it.copy(stats = response.body()!!.stats) }
                 }

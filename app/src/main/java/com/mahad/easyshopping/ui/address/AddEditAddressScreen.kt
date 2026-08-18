@@ -28,8 +28,8 @@ fun AddEditAddressScreen(
     viewModel: AddressViewModel = viewModel()
 ) {
     var type by remember { mutableStateOf(address?.type ?: "home") }
-    var fullName by remember { mutableStateOf(address?.fullName ?: "") }
-    var addressLine1 by remember { mutableStateOf(address?.addressLine1 ?: "") }
+    var fullName by remember { mutableStateOf(address?.fullName ?: address?.fullNameSnake ?: address?.name ?: "") }
+    var addressLine1 by remember { mutableStateOf(address?.addressLine1 ?: address?.street ?: "") }
     var addressLine2 by remember { mutableStateOf(address?.addressLine2 ?: "") }
     var city by remember { mutableStateOf(address?.city ?: "") }
     var state by remember { mutableStateOf(address?.state ?: "") }
@@ -145,18 +145,20 @@ fun AddEditAddressScreen(
             Button(
                 onClick = {
                     val request = AddressRequest(
-                        fullName = fullName,
                         type = type,
                         addressLine1 = addressLine1,
                         addressLine2 = addressLine2,
-                        street = addressLine1,
                         city = city,
                         state = state,
                         country = country,
                         zipCode = zipCode,
-                        phone = phoneNumber,
                         phoneNumber = phoneNumber,
-                        isDefault = isDefault
+                        isDefault = isDefault,
+                        fullName = fullName,
+                        name = fullName,
+                        fullNameSnake = fullName,
+                        street = addressLine1,
+                        phone = phoneNumber
                     )
                     if (address == null) {
                         viewModel.addAddress(request, onSuccess)

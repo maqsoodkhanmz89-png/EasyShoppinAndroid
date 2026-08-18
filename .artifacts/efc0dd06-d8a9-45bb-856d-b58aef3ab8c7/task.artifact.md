@@ -1,6 +1,6 @@
-- [x] Update `RegisterRequest` in `Models.kt`
-- [x] Update `CreateAccountViewModel.kt` with new fields and validation
-- [x] Update `CreateAccountScreen.kt` UI
-- [x] Update `AddEditAddressScreen.kt` label and mandatory check
-- [x] Update `SessionManager.kt` and `LoginViewModel.kt` to handle phone number
-- [x] Update `ProfileHeader` to display phone number
+- [x] Implement `HeaderInterceptor` in `RetrofitClient.kt`
+- [x] Remove manual `@Header` parameters from `ApiService.kt`
+- [x] Refactor `AddressViewModel.kt` to remove manual token passing and fix refresh sequencing
+- [x] Refactor `CartViewModel.kt` and others to remove manual token passing
+- [x] Refactor `OrderViewModel.kt` to remove manual token passing
+- [x] Simplify `AddressListScreen.kt` fetch logic

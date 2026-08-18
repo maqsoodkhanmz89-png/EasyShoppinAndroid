@@ -111,7 +111,7 @@ fun AddressCard(
                     Icon(
                         imageVector = when (address.type.lowercase()) {
                             "home" -> Icons.Default.Home
-                            "office" -> Icons.Default.Business
+                            "work" -> Icons.Default.Business
                             else -> Icons.Default.LocationOn
                         },
                         contentDescription = null,
@@ -144,8 +144,9 @@ fun AddressCard(
             
             Spacer(modifier = Modifier.height(8.dp))
             
-            if (!address.fullName.isNullOrBlank()) {
-                Text(text = address.fullName, style = MaterialTheme.typography.bodyLarge, fontWeight = FontWeight.Bold)
+            val displayName = address.fullName ?: address.fullNameSnake ?: address.name
+            if (!displayName.isNullOrBlank()) {
+                Text(text = displayName, style = MaterialTheme.typography.bodyLarge, fontWeight = FontWeight.Bold)
             }
             Text(text = address.addressLine1, style = MaterialTheme.typography.bodyLarge)
             if (!address.addressLine2.isNullOrBlank()) {

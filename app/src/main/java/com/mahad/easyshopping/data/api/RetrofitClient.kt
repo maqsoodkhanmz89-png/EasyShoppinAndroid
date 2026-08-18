@@ -1,6 +1,9 @@
 package com.mahad.easyshopping.data.api
 
+import com.mahad.easyshopping.data.SessionManager
+import okhttp3.Interceptor
 import okhttp3.OkHttpClient
+import okhttp3.Response
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -15,6 +18,21 @@ object RetrofitClient {
 
     private val logging = HttpLoggingInterceptor().apply {
         level = HttpLoggingInterceptor.Level.BODY
+    }
+
+    private val authInterceptor = Interceptor { chain ->
+        val originalRequest = chain.request()
+        val token = SessionManager.token
+        
+        val newRequest = if (!token.isNullOrBlank()) {
+            originalRequest.newBuilder()
+                .header("Authorization", "Bearer $token")
+                .build()
+        } else {
+            originalRequest
+        }
+        
+        chain.proceed(newRequest)
     }
 
     private fun getUnsafeOkHttpClient(): OkHttpClient {
@@ -36,6 +54,7 @@ object RetrofitClient {
             return OkHttpClient.Builder()
                 .sslSocketFactory(sslSocketFactory, trustAllCerts[0] as X509TrustManager)
                 .hostnameVerifier { _, _ -> true }
+                .addInterceptor(authInterceptor)
                 .addInterceptor(logging)
                 .build()
         } catch (e: Exception) {

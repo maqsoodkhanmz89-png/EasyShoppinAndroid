@@ -1,6 +1,5 @@
 package com.mahad.easyshopping.ui.checkout
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.mahad.easyshopping.data.SessionManager
@@ -22,11 +21,11 @@ class CheckoutViewModel : ViewModel() {
     }
 
     fun fetchAddresses() {
-        val token = SessionManager.getBearerToken() ?: return
+        if (!SessionManager.isLoggedIn) return
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true, errorMessage = null) }
             try {
-                val response = RetrofitClient.apiService.getAddresses(token)
+                val response = RetrofitClient.apiService.getAddresses()
                 if (response.isSuccessful && response.body() != null) {
                     val addresses = response.body()?.addresses ?: emptyList()
                     _uiState.update { 
@@ -87,7 +86,6 @@ class CheckoutViewModel : ViewModel() {
             }
         }
         
-        val token = SessionManager.getBearerToken() ?: return
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true, errorMessage = null) }
             try {
@@ -99,7 +97,7 @@ class CheckoutViewModel : ViewModel() {
                     notes = state.notes.ifBlank { null }
                 )
                 
-                val response = RetrofitClient.apiService.placeOrder(token, request)
+                val response = RetrofitClient.apiService.placeOrder(request)
                 if (response.isSuccessful && response.body() != null) {
                     val body = response.body()!!
                     if (body.success) {

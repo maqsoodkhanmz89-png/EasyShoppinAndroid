@@ -21,11 +21,11 @@ class CartViewModel : ViewModel() {
     }
 
     fun fetchCart() {
-        val token = SessionManager.getBearerToken() ?: return
+        if (!SessionManager.isLoggedIn) return
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true) }
             try {
-                val response = RetrofitClient.apiService.getCart(token)
+                val response = RetrofitClient.apiService.getCart()
                 if (response.isSuccessful && response.body() != null) {
                     val body = response.body()!!
                     _uiState.update { 
@@ -46,7 +46,6 @@ class CartViewModel : ViewModel() {
     }
 
     fun updateQuantity(productId: String, quantity: Int) {
-        val token = SessionManager.getBearerToken() ?: return
         if (quantity < 1) {
             deleteItem(productId)
             return
@@ -54,7 +53,7 @@ class CartViewModel : ViewModel() {
 
         viewModelScope.launch {
             try {
-                val response = RetrofitClient.apiService.updateCart(token, UpdateCartRequest(productId, quantity))
+                val response = RetrofitClient.apiService.updateCart(UpdateCartRequest(productId, quantity))
                 if (response.isSuccessful && response.body() != null) {
                     val body = response.body()!!
                     _uiState.update { 
@@ -72,10 +71,9 @@ class CartViewModel : ViewModel() {
     }
 
     fun deleteItem(productId: String) {
-        val token = SessionManager.getBearerToken() ?: return
         viewModelScope.launch {
             try {
-                val response = RetrofitClient.apiService.deleteCartItem(token, productId)
+                val response = RetrofitClient.apiService.deleteCartItem(productId)
                 if (response.isSuccessful && response.body() != null) {
                     val body = response.body()!!
                     _uiState.update { 
@@ -93,7 +91,6 @@ class CartViewModel : ViewModel() {
     }
 
     fun addToCart(product: Product) {
-        val token = SessionManager.getBearerToken() ?: return
         viewModelScope.launch {
             try {
                 val request = AddToCartRequest(
@@ -103,7 +100,7 @@ class CartViewModel : ViewModel() {
                     quantity = 1,
                     image = product.image
                 )
-                val response = RetrofitClient.apiService.addToCart(token, request)
+                val response = RetrofitClient.apiService.addToCart(request)
                 if (response.isSuccessful && response.body() != null) {
                     val body = response.body()!!
                     _uiState.update { 

@@ -52,8 +52,6 @@ class HomeViewModel : ViewModel() {
     }
 
     fun logout(onSuccess: () -> Unit) {
-        val token = SessionManager.getBearerToken()
-        
         // Always clear local data and call success to ensure UI updates,
         // even if the network call fails or is not needed.
         val performLocalLogout = {
@@ -61,7 +59,7 @@ class HomeViewModel : ViewModel() {
             onSuccess()
         }
 
-        if (token == null) {
+        if (!SessionManager.isLoggedIn) {
             performLocalLogout()
             return
         }
@@ -69,7 +67,7 @@ class HomeViewModel : ViewModel() {
         viewModelScope.launch {
             try {
                 // We attempt to notify the server, but we logout locally regardless of result
-                RetrofitClient.apiService.logout(token, emptyMap())
+                RetrofitClient.apiService.logout(emptyMap())
                 performLocalLogout()
             } catch (e: Exception) {
                 // If network fails, we still want to log out the user locally

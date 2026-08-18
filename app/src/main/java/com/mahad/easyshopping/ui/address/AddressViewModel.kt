@@ -24,61 +24,50 @@ class AddressViewModel : ViewModel() {
 
     fun fetchAddresses() {
         viewModelScope.launch {
-            val token = SessionManager.getBearerToken()
-            Log.d("AddressViewModel", "Fetching addresses with token: ${token?.take(15)}...")
-            if (token == null) {
-                _uiState.update { it.copy(isLoading = false, errorMessage = "User not logged in") }
-                return@launch
-            }
-            _uiState.update { it.copy(isLoading = true, errorMessage = null) }
-            try {
-                val response = RetrofitClient.apiService.getAddresses(token)
-                Log.d("AddressViewModel", "Fetch response: ${response.code()}")
-                if (response.isSuccessful && response.body() != null) {
-                    _uiState.update { 
-                        it.copy(
-                            isLoading = false,
-                            addresses = response.body()?.addresses ?: emptyList()
-                        )
-                    }
-                } else {
-                    val errorMsg = response.errorBody()?.string() ?: "Failed to load addresses"
-                    Log.e("AddressViewModel", "Fetch error: $errorMsg")
-                    _uiState.update { it.copy(isLoading = false, errorMessage = errorMsg) }
+            _fetchAddressesInternal()
+        }
+    }
+
+    private suspend fun _fetchAddressesInternal() {
+        val token = SessionManager.token
+        Log.d("AddressViewModel", "Fetching addresses. Token present: ${!token.isNullOrBlank()}")
+        if (token.isNullOrBlank()) {
+            _uiState.update { it.copy(isLoading = false, errorMessage = "User not logged in") }
+            return
+        }
+        
+        _uiState.update { it.copy(isLoading = true, errorMessage = null) }
+        try {
+            val response = RetrofitClient.apiService.getAddresses()
+            Log.d("AddressViewModel", "Fetch response: ${response.code()}")
+            if (response.isSuccessful && response.body() != null) {
+                val body = response.body()
+                _uiState.update { 
+                    it.copy(
+                        isLoading = false,
+                        addresses = body?.addresses?.toList() ?: emptyList()
+                    )
                 }
-            } catch (e: Exception) {
-                Log.e("AddressViewModel", "Fetch exception", e)
-                _uiState.update { it.copy(isLoading = false, errorMessage = e.message) }
+            } else {
+                val errorMsg = response.errorBody()?.string() ?: "Failed to load addresses"
+                Log.e("AddressViewModel", "Fetch error: $errorMsg")
+                _uiState.update { it.copy(isLoading = false, errorMessage = errorMsg) }
             }
+        } catch (e: Exception) {
+            Log.e("AddressViewModel", "Fetch exception", e)
+            _uiState.update { it.copy(isLoading = false, errorMessage = e.message) }
         }
     }
 
     fun addAddress(request: AddressRequest, onSuccess: () -> Unit) {
         viewModelScope.launch {
-            val token = SessionManager.getBearerToken()
-            Log.d("AddressViewModel", "Adding address with token: ${token?.take(15)}...")
-            if (token == null) {
-                _uiState.update { it.copy(errorMessage = "User not logged in") }
-                return@launch
-            }
             _uiState.update { it.copy(isLoading = true, errorMessage = null) }
             try {
-                val response = RetrofitClient.apiService.addAddress(token, request)
+                val response = RetrofitClient.apiService.addAddress(request)
                 Log.d("AddressViewModel", "Add address response: ${response.code()}")
                 if (response.isSuccessful) {
-                    // Update state immediately with the new address if returned, 
-                    // or just refresh the full list.
-                    val newAddress = response.body()?.address
-                    if (newAddress != null) {
-                        _uiState.update { current ->
-                            current.copy(
-                                addresses = current.addresses + newAddress,
-                                isLoading = false
-                            )
-                        }
-                    }
-                    // Also refresh the full list to be sure and sync everything
-                    fetchAddresses()
+                    // Update list BEFORE calling onSuccess to ensure UI is ready
+                    _fetchAddressesInternal()
                     onSuccess()
                 } else {
                     val errorMsg = response.errorBody()?.string() ?: "Failed to add address"
@@ -94,27 +83,12 @@ class AddressViewModel : ViewModel() {
 
     fun updateAddress(addressId: String, request: AddressRequest, onSuccess: () -> Unit) {
         viewModelScope.launch {
-            val token = SessionManager.getBearerToken()
-            Log.d("AddressViewModel", "Updating address with token: ${token?.take(15)}...")
-            if (token == null) {
-                _uiState.update { it.copy(errorMessage = "User not logged in") }
-                return@launch
-            }
             _uiState.update { it.copy(isLoading = true, errorMessage = null) }
             try {
-                val response = RetrofitClient.apiService.updateAddress(token, addressId, request)
+                val response = RetrofitClient.apiService.updateAddress(addressId, request)
                 Log.d("AddressViewModel", "Update response: ${response.code()}")
                 if (response.isSuccessful) {
-                    val updatedAddress = response.body()?.address
-                    if (updatedAddress != null) {
-                        _uiState.update { current ->
-                            current.copy(
-                                addresses = current.addresses.map { if (it.id == addressId) updatedAddress else it },
-                                isLoading = false
-                            )
-                        }
-                    }
-                    fetchAddresses()
+                    _fetchAddressesInternal()
                     onSuccess()
                 } else {
                     val errorMsg = response.errorBody()?.string() ?: "Failed to update address"
@@ -129,12 +103,11 @@ class AddressViewModel : ViewModel() {
     }
 
     fun deleteAddress(addressId: String) {
-        val token = SessionManager.getBearerToken() ?: return
         viewModelScope.launch {
             try {
-                val response = RetrofitClient.apiService.deleteAddress(token, addressId)
+                val response = RetrofitClient.apiService.deleteAddress(addressId)
                 if (response.isSuccessful) {
-                    fetchAddresses()
+                    _fetchAddressesInternal()
                 } else {
                     _uiState.update { it.copy(errorMessage = "Failed to delete address") }
                 }
