@@ -19,7 +19,7 @@ object SessionManager {
         get() = prefs.getString(KEY_TOKEN, null)
         set(value) {
             // Use commit() for critical auth token to ensure immediate synchronous write
-            prefs.edit().putString(KEY_TOKEN, value).commit()
+            prefs.edit().putString(KEY_TOKEN, value).apply()
         }
 
     var userName: String?
