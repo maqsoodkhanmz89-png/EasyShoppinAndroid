@@ -4,6 +4,8 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -26,6 +28,7 @@ import com.mahad.easyshopping.ui.order.OrderHistoryScreen
 import com.mahad.easyshopping.ui.order.OrderDetailsScreen
 import com.mahad.easyshopping.ui.order.ReviewScreen
 import com.mahad.easyshopping.ui.address.AddressViewModel
+import com.mahad.easyshopping.ui.splash.SplashScreen
 import com.mahad.easyshopping.ui.theme.EasyShoppingTheme
 
 class MainActivity : ComponentActivity() {
@@ -39,7 +42,14 @@ class MainActivity : ComponentActivity() {
                 val cartViewModel: CartViewModel = viewModel()
                 val addressViewModel: AddressViewModel = viewModel()
                 
-                NavHost(navController = navController, startDestination = "home") {
+                NavHost(navController = navController, startDestination = "splash") {
+                    composable("splash") {
+                        SplashScreen(onTimeout = {
+                            navController.navigate("home") {
+                                popUpTo("splash") { inclusive = true }
+                            }
+                        })
+                    }
                     composable("login") {
                         LoginScreen(
                             onLoginSuccess = {
@@ -140,6 +150,7 @@ class MainActivity : ComponentActivity() {
                         )
                     }
                     composable("checkout") {
+                        val cartUiState by cartViewModel.uiState.collectAsState()
                         CheckoutScreen(
                             onBackClick = { navController.popBackStack() },
                             onSuccess = {
@@ -150,7 +161,8 @@ class MainActivity : ComponentActivity() {
                             },
                             onAddAddressClick = {
                                 navController.navigate("add_edit_address")
-                            }
+                            },
+                            subtotal = cartUiState.subtotal
                         )
                     }
                     composable("order_success") {

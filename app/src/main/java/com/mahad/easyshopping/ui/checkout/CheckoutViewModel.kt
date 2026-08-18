@@ -1,5 +1,6 @@
 package com.mahad.easyshopping.ui.checkout
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.mahad.easyshopping.data.SessionManager
@@ -18,7 +19,6 @@ class CheckoutViewModel : ViewModel() {
 
     init {
         fetchAddresses()
-        fetchCart()
     }
 
     fun fetchAddresses() {
@@ -41,25 +41,6 @@ class CheckoutViewModel : ViewModel() {
                 }
             } catch (e: Exception) {
                 _uiState.update { it.copy(isLoading = false, errorMessage = e.message) }
-            }
-        }
-    }
-
-    fun fetchCart() {
-        val token = SessionManager.getBearerToken() ?: return
-        viewModelScope.launch {
-            try {
-                val response = RetrofitClient.apiService.getCart(token)
-                if (response.isSuccessful && response.body() != null) {
-                    val body = response.body()!!
-                    _uiState.update { 
-                        it.copy(
-                            subtotal = body.subtotal
-                        )
-                    }
-                }
-            } catch (e: Exception) {
-                // Ignore cart fetch error in checkout for now
             }
         }
     }
@@ -151,7 +132,6 @@ data class CheckoutUiState(
     val cardDetails: CardDetails? = null,
     val couponCode: String = "",
     val notes: String = "",
-    val subtotal: Double = 0.0,
     val isLoading: Boolean = false,
     val errorMessage: String? = null,
     val orderSuccess: Order? = null

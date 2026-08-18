@@ -35,6 +35,7 @@ fun CheckoutScreen(
     onBackClick: () -> Unit,
     onSuccess: (Order) -> Unit,
     onAddAddressClick: () -> Unit,
+    subtotal: Double,
     viewModel: CheckoutViewModel = viewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
@@ -176,7 +177,7 @@ fun CheckoutScreen(
 
             // Order Summary
             HorizontalDivider()
-            OrderSummary(subtotal = uiState.subtotal)
+            OrderSummary(subtotal = subtotal)
 
             if (uiState.errorMessage != null) {
                 Surface(
@@ -290,14 +291,14 @@ fun PaymentMethodSelector(selectedMethod: String, onMethodSelected: (String) -> 
 
 @Composable
 fun OrderSummary(subtotal: Double) {
-    val tax = subtotal * 0.1 // 10% tax for example
+    val tax = subtotal * 0.02 // 2% tax
     val shipping = if (subtotal > 500) 0.0 else 50.0
     val total = subtotal + tax + shipping
 
     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
         Text("Order Summary", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
         SummaryRow("Items Subtotal", subtotal)
-        SummaryRow("Tax (10%)", tax)
+        SummaryRow("Tax (2%)", tax)
         SummaryRow("Shipping Charges", shipping)
         HorizontalDivider(modifier = Modifier.padding(vertical = 4.dp))
         Row(
